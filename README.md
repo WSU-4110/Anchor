@@ -6,7 +6,7 @@ This is the official monorepo for Anchor during the Winter 2026 semester
 
 - Alessandro Bongiorno: Fullstack Developer
 - Trevor Lee: Fullstack Developer
-- Isacc Lopez: Backend Developer
+- Isaac Lopez: Backend Developer
 
 ## Getting Started
 
