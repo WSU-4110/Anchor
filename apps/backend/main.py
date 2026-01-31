@@ -1,14 +1,27 @@
-from fastapi import FastAPI
 import uvicorn as uv
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from routes import users
 
 app = FastAPI()
+origins = ["http://localhost:8000"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods="*",
+    allow_headers="*",
+)
+
+app.include_router(users.router)
+
 
 @app.get("/")
 def get_root():
-    return{"message": "up and running"}
+    return {"message": "up and running"}
 
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     uv.run(app, host="0.0.0.0", port=8000)
-
