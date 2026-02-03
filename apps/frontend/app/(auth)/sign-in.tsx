@@ -12,6 +12,7 @@ import LottieView from "lottie-react-native";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
+
   const router = useRouter();
 
   const [emailAddress, setEmailAddress] = React.useState("");
@@ -42,8 +43,14 @@ export default function Page() {
               console.log(session?.currentTask);
               return;
             }
+            const user = session.user;
+            const memberships = user?.organizationMemberships || [];
+            if(memberships.length > 0){
+              router.replace("/(business)")
+            }else{
+              router.replace("/(home)")
+            }
 
-            router.replace("/(home)");
           },
         });
       } else if (signInAttempt.status === "needs_second_factor") {
@@ -93,8 +100,13 @@ export default function Page() {
               console.log(session?.currentTask);
               return;
             }
-
-            router.replace("/");
+            const user = session.user;
+            const memberships = user?.organizationMemberships || [];
+            if(memberships.length > 0){
+              router.replace("/(business)")
+            }else{
+              router.replace("/(home)")
+            }
           },
         });
       } else {
@@ -172,7 +184,7 @@ export default function Page() {
         </TButton>
         <TView className="flex flex-row items-center gap-2">
           <TText type="default">Forgot to Register?</TText>
-          <Link href="/sign-up">
+          <Link href="./sign-up">
             <TText type="link">Sign up</TText>
           </Link>
         </TView>

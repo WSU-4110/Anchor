@@ -1,43 +1,28 @@
 import { PressableScale } from "pressto";
 import { ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, StyleProp, ViewStyle, } from "react-native";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type TButtonProps = {
   type: "primary" | "secondary" | "link" | "outline";
   onPress: () => void;
   children: ReactNode;
+  style?: StyleProp<ViewStyle>; // Add this line
 };
-export function TButton({ onPress, children, type = "primary" }: TButtonProps) {
+export function TButton({style, onPress, children, type = "primary" }: TButtonProps) {
   const colorScheme = useColorScheme();
+  const theme = colorScheme === "dark" ? darkTheme : lightTheme;
+const baseStyle = theme[type === "outline" ? "primary" : type] || {};
 
   return (
     <View>
-      {colorScheme &&
-        (colorScheme === "dark" ? (
           <PressableScale
-            style={[
-              type === "primary" ? darkTheme.primary : undefined,
-              type === "link" ? darkTheme.link : undefined,
-              type === "secondary" ? darkTheme.secondary : undefined,
-            ]}
+            style={[baseStyle, style]}
             onPress={onPress}
           >
             {children}
           </PressableScale>
-        ) : (
-          <PressableScale
-            style={[
-              type === "primary" ? lightTheme.primary : undefined,
-              type === "link" ? lightTheme.link : undefined,
-              type === "secondary" ? lightTheme.secondary : undefined,
-            ]}
-            onPress={onPress}
-          >
-            {children}
-          </PressableScale>
-        ))}
-    </View>
+        </View>
   );
 }
 const darkTheme = StyleSheet.create({
