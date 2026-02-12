@@ -2,6 +2,10 @@
 
 This is the official monorepo for Anchor during the Winter 2026 semester
 
+# Project description
+
+Add a brief project description here. A logo or screenshot would be also nice.
+
 ## Team Members
 
 - Alessandro Bongiorno: Fullstack Developer
