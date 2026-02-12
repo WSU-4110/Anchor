@@ -5,7 +5,12 @@ import { TButton } from "@/components/themedComponents/themed-button";
 import { router } from "expo-router";
 import { Image } from "expo-image";
 import { useColorScheme, View } from "react-native";
-import { ArrowRight, BriefcaseBusiness, User, LucideIcon } from "lucide-react-native";
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  User,
+  LucideIcon,
+} from "lucide-react-native";
 
 export default function ModalScreen() {
   const colorScheme = useColorScheme();
@@ -18,7 +23,11 @@ export default function ModalScreen() {
   return (
     <TView className="flex-1 bg-background items-center pt-24 px-6">
       <Image
-        source={isDark ? require("../assets/images/logo.png") : require("../assets/images/logo-dark.png")}
+        source={
+          isDark
+            ? require("../assets/images/logo.png")
+            : require("../assets/images/logo-dark.png")
+        }
         style={{ width: 120, height: 120, marginBottom: 20 }}
         contentFit="contain"
       />
@@ -48,7 +57,7 @@ export default function ModalScreen() {
       <TView className="mt-auto mb-10 flex-row gap-1">
         <TText>Already have an account?</TText>
         <TText
-          onPress={() => router.push("/sign-in")}
+          onPress={() => router.push("/(auth)/sign-in")}
           className="font-bold"
           style={{ color: isDark ? "#0a7ea4" : "#06377a" }}
         >
@@ -67,16 +76,28 @@ function AccountTypeCard({
   icon: Icon,
   isDark,
   onPress,
-  type
+  type,
 }: {
-  title: string,
-  icon: LucideIcon,
-  isDark: boolean,
-  onPress: () => void,
-  type: "primary" | "secondary"
+  title: string;
+  icon: LucideIcon;
+  isDark: boolean;
+  onPress: () => void;
+  type: "primary" | "secondary";
 }) {
-  const iconBg = isDark ? (type === "primary" ? "#b5e6c9" : "#061f20") : (type === "primary" ? "#061f20" : "#b5e6c9");
-  const iconColor = isDark ? (type === "primary" ? "#061f20" : "#aac7b6") : (type === "primary" ? "#b5e6c9" : "#061f20");
+  const iconBg = isDark
+    ? type === "primary"
+      ? "#b5e6c9"
+      : "#061f20"
+    : type === "primary"
+      ? "#061f20"
+      : "#b5e6c9";
+  const iconColor = isDark
+    ? type === "primary"
+      ? "#061f20"
+      : "#aac7b6"
+    : type === "primary"
+      ? "#b5e6c9"
+      : "#061f20";
 
   return (
     <TButton
@@ -91,12 +112,17 @@ function AccountTypeCard({
         <Icon color={iconColor} size={32} />
       </TView>
 
-      <TText type="secondary" className="text-center mb-4 text-sm font-semibold">
+      <TText
+        type="secondary"
+        className="text-center mb-4 text-sm font-semibold"
+      >
         {title}
       </TText>
 
       <View className="flex-row items-center justify-center gap-1">
-        <TText  type="link" className="text-xs">Continue</TText>
+        <TText type="link" className="text-xs">
+          Continue
+        </TText>
         <ArrowRight size={14} color={isDark ? "#0a7ea4" : "#06377a"} />
       </View>
     </TButton>
