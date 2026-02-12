@@ -35,14 +35,14 @@ export default function SetUp({ businessName, setBusinessName }: SetUpProps) {
 
   return (
     <TView className="flex-1 items-center justify-center p-6">
-    <TView className="flex flex-row gap-24 mb-8 mt-4">
-      <ArrowBigLeft
-        color="white"
-        onPress={() => {
-          router.back();
-        }}
-      />
-    </TView>
+      <TView className="flex flex-row gap-24 mb-8 mt-4">
+        <ArrowBigLeft
+          color="white"
+          onPress={() => {
+            router.back();
+          }}
+        />
+      </TView>
       <TText>Finish setting up your business</TText>
       <TTextInput
         type="default"
@@ -52,7 +52,7 @@ export default function SetUp({ businessName, setBusinessName }: SetUpProps) {
         className="w-full my-4 border p-2"
       />
       <TButton type="primary" onPress={handleCreateBusiness}>
-        <TText>Create Business Account</TText>
+        <TText type="secondary">Create Business Account</TText>
       </TButton>
     </TView>
   );
