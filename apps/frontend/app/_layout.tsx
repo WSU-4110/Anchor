@@ -3,7 +3,8 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Slot, Stack } from "expo-router";
+import { Stack } from "expo-router";
+
 import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
