@@ -44,6 +44,7 @@ export default function SetUp({ businessName, setBusinessName }: SetUpProps) {
         />
       </TView>
       <TText>Finish setting up your business</TText>
+
       <TTextInput
         type="default"
         placeholder="Business Name"
@@ -52,7 +53,7 @@ export default function SetUp({ businessName, setBusinessName }: SetUpProps) {
         className="w-full my-4 border p-2"
       />
       <TButton type="primary" onPress={handleCreateBusiness}>
-        <TText type="secondary">Create Business Account</TText>
+        <TText type="secondary">Add Business</TText>
       </TButton>
     </TView>
   );
