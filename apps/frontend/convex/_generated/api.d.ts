@@ -8,6 +8,9 @@
  * @module
  */
 
+import type * as posts from "../posts.js";
+import type * as saves from "../saves.js";
+import type * as seed from "../seed.js";
 import type * as tasks from "../tasks.js";
 
 import type {
@@ -17,6 +20,9 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  posts: typeof posts;
+  saves: typeof saves;
+  seed: typeof seed;
   tasks: typeof tasks;
 }>;
 
