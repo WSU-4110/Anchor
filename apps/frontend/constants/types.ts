@@ -23,3 +23,11 @@ export type SignUpFormProps = {
 export type AccountFormProps = {
   user: UserResource;
 };
+
+export type Post = {
+  title: string;
+  imageUrl?: string;
+  postDescription: string;
+  datePosted: string;
+  author: string;
+};

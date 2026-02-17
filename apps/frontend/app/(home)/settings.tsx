@@ -14,6 +14,8 @@ import AccountFormContainer from "@/components/clerk/AccountFormContainer";
 import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
 import { TScrollView } from "@/components/themedComponents/themed-scrollView";
 import { useState } from "react";
+import { Image } from "expo-image";
+import * as ImagePicker from "expo-image-picker";
 
 export default function SettingsScreen() {
   const { signOut } = useClerk();
@@ -39,13 +41,49 @@ export default function SettingsScreen() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
+  const handleImageSelector = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0].base64) {
+        const base64 = result.assets[0].base64;
+        const mimeType = result.assets[0].mimeType;
+        const image = `data:${mimeType};base64,${base64}`;
+
+        if (user) {
+          await user.setProfileImage({ file: image });
+          await user.reload();
+        }
+      }
+    } catch (err) {
+      console.log("There was an error uploading new image", err);
+    }
+  };
   return (
     <TScrollView className="flex-1">
       {/* Header with Background Accent */}
       <TView className="pt-16 pb-8 px-6 items-center justify-center">
-        <TView className="w-24 h-24 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4">
-          <TText className="text-3xl font-bold">{user?.firstName?.[0]}</TText>
-        </TView>
+        {user && (
+          <TView className="w-24 h-24 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4 ">
+            <TouchableOpacity onPress={handleImageSelector}>
+              <Image
+                source={user.imageUrl}
+                className="object-cover rounded-full"
+                style={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: 40,
+                }}
+              />
+            </TouchableOpacity>
+          </TView>
+        )}
         <TText type="title" className="text-2xl font-bold">
           Account Settings
         </TText>
