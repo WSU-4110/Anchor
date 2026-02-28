@@ -1,20 +1,13 @@
 import { Image } from "expo-image";
-import { TouchableOpacity } from "react-native";
+import { View } from "react-native";
 type PostViewSmallProps = {
-  imageUrl: string;
-  setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
-  changeView: boolean;
+  imageUrl: string | undefined;
 };
 export default function PostViewSmall({
   imageUrl,
-  setChangeView,
-  changeView,
 }: PostViewSmallProps) {
   return (
-    <TouchableOpacity
-      onPress={() => {
-        setChangeView(!changeView);
-      }}
+    <View
       className="border-2 border-white/15 p-1"
       style={{
         width: 110,
@@ -33,6 +26,6 @@ export default function PostViewSmall({
         }}
         source={imageUrl}
       />
-    </TouchableOpacity>
+    </View>
   );
 }

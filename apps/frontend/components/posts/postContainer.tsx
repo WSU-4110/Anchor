@@ -3,6 +3,8 @@ import { Image } from "expo-image";
 import { Building2, Heart } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native"
 import { TText } from "../themedComponents/themed-text";
+import PostViewFull from "./postViewFull";
+import PostViewSmall from "./postSmall";
 
 interface postContainer{
   changeView : boolean,
@@ -30,28 +32,13 @@ export default function PostContainer({post, changeView, setChangeView}: postCon
           borderRadius: 18,
         }}
       >
-        <Image
-          contentFit="cover"
-          style={{
-            flex: 1,
-            width: "100%",
-            height: "100%",
-            borderRadius: 18,
-          }}
-          source={post.imageUrl}
+        <PostViewFull
+        post={{
+          authorName : post.authorName,
+          body : post.body,
+          imageUrl : post.imageUrl
+        }}
         />
-
-        <View className="flex flex-row justify-between mt-2 mx-2 ">
-          <View className="flex flex-row gap-2 items-center ">
-            <Building2 color="#aac7b6" />
-            <TText className="text-md text-white">{post.authorName}</TText>
-          </View>
-          <Heart className="pr-2" color="#aac7b6" />
-        </View>
-
-        <View className="mx-2">
-          <TText className="text-md text-white">{post.body}</TText>
-        </View>
       </TouchableOpacity>
     ):(
       <TouchableOpacity
@@ -66,15 +53,8 @@ export default function PostContainer({post, changeView, setChangeView}: postCon
           borderRadius: 18,
         }}
       >
-        <Image
-          contentFit="cover"
-          style={{
-            flex: 1,
-            width: "100%",
-            height: "100%",
-            borderRadius: 18,
-          }}
-          source={post.imageUrl}
+        <PostViewSmall
+          imageUrl={post.imageUrl}
         />
       </TouchableOpacity>
     )}
