@@ -10,6 +10,7 @@ import { Loader2 } from "lucide-react-native";
 import PostViewSmall from "@/components/posts/postSmall";
 import { useState } from "react";
 import PostViewFull from "@/components/posts/postViewFull";
+import PostContainer from "@/components/posts/postContainer";
 
 export default function HomeScreen() {
   const { logoUrl, name, id } = useOrgDetails();
@@ -101,28 +102,17 @@ export default function HomeScreen() {
             data={data}
             renderItem={({ item }) => (
               <View>
-                {changeView === false ? (
-                  <PostViewSmall
-                    imageUrl={item.imageUrl}
-                    changeView={changeView}
-                    setChangeView={setChangeView}
-                  />
-                ) : (
-                  <View>
-                    <PostViewFull
-                      post={{
-                        authorName: item.authorName,
-                        imageUrl: item.imageUrl,
-                        title: item.title,
-                        body: item.body,
-                      }}
-                      changeView={changeView}
-                      setChangeView={setChangeView}
-                    />
-                  </View>
-                )}
+                <PostContainer
+                post={{
+                  imageUrl : item.imageUrl,
+                  authorName : item.authorName,
+                  body: item.body
+                }}
+                changeView={changeView}
+                setChangeView={setChangeView}
+                />
               </View>
-            )}
+                )}
             numColumns={changeView === false ? 3 : 1}
           />
         )}
