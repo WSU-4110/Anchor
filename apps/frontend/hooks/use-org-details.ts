@@ -3,6 +3,7 @@ import { useUser } from "@clerk/clerk-expo";
 export type OrgDetails = {
   name: string;
   logoUrl: string;
+  id: string;
 };
 export default function useOrgDetails(): OrgDetails {
   const { user, isLoaded } = useUser();
@@ -13,9 +14,11 @@ export default function useOrgDetails(): OrgDetails {
   const organization = user?.organizationMemberships[0].organization;
   const name = organization?.name || "";
   const logoUrl = organization?.imageUrl || "";
+  const id = organization?.id || "";
 
   return {
     name,
+    id,
     logoUrl,
   };
 }

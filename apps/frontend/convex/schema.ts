@@ -9,7 +9,19 @@ export default defineSchema({
     body: v.string(),
     createdAt: v.number(), // Date.now()
     updatedAt: v.number(), // Date.now()
-  }).index("by_createdAt", ["createdAt"]),
+    authorId: v.string(),
+    imageUrl: v.string(),
+  })
+    .index("by_createdAt", ["createdAt"])
+    .index("authorId", ["authorId"]),
+
+  users: defineTable({
+    email: v.string(),
+    clerkUserId: v.string(),
+    firstName: v.optional(v.string()),
+    lastName: v.optional(v.string()),
+    imageUrl: v.optional(v.string()),
+  }).index("byClerkUserId", ["clerkUserId"]),
 
   savedPosts: defineTable({
     userKey: v.string(), // later: Clerk userId
