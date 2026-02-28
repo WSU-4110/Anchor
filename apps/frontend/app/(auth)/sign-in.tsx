@@ -45,12 +45,11 @@ export default function Page() {
             }
             const user = session.user;
             const memberships = user?.organizationMemberships || [];
-            if(memberships.length > 0){
-              router.replace("/(business)")
-            }else{
-              router.replace("/(home)")
+            if (memberships.length > 0) {
+              router.replace("/(business)");
+            } else {
+              router.replace("/(home)");
             }
-
           },
         });
       } else if (signInAttempt.status === "needs_second_factor") {
@@ -102,10 +101,10 @@ export default function Page() {
             }
             const user = session.user;
             const memberships = user?.organizationMemberships || [];
-            if(memberships.length > 0){
-              router.replace("/(business)")
-            }else{
-              router.replace("/(home)")
+            if (memberships.length > 0) {
+              router.replace("/(business)");
+            } else {
+              router.replace("/(home)");
             }
           },
         });
@@ -120,17 +119,19 @@ export default function Page() {
   // Display email code verification form
   if (showEmailCode) {
     return (
-      <View>
+      <TView className="flex-1 items-center justify-center">
         <Text>Verify your email</Text>
         <Text>A verification code has been sent to your email.</Text>
-        <TextInput
+        <TTextInput
+          type="default"
+          className="w-1/2"
           value={code}
           placeholder="Enter verification code"
           placeholderTextColor="#666666"
           onChangeText={(code) => setCode(code)}
         />
         <Button title="Verify" onPress={onVerifyPress} />
-      </View>
+      </TView>
     );
   }
 
@@ -148,17 +149,20 @@ export default function Page() {
         </TText>
       </TView>
 
-      <TView className="gap-4 flex items-center  min-h-screen w-full">
-        <LottieView
-          source={require("../../assets/animations/lottie-animation.json")}
-          autoPlay
-          loop
-          style={{
-            width: 300,
-            height: 300,
-            borderColor: "#FFF",
-          }}
-        />
+      <TView className="gap-4 flex items-center min-h-screen w-full">
+        <View className="h-80 w-80">
+          <LottieView
+            source={require("../../assets/animations/lottie-animation.json")}
+            autoPlay
+            loop
+            style={{
+              width: 300,
+              height: 300,
+              borderColor: "#FFF",
+            }}
+          />
+        </View>
+
         <TTextInput
           className="w-full"
           type={"default"}

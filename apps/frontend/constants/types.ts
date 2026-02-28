@@ -25,9 +25,11 @@ export type AccountFormProps = {
 };
 
 export type Post = {
+  authorName: string;
+  authorId: string;
   title: string;
-  imageUrl?: string;
-  postDescription: string;
-  datePosted: string;
-  author: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl: string;
 };

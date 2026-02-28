@@ -8,6 +8,7 @@ import {
 export type ThemedTextInput = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
+  required?: boolean;
   type: "default";
 };
 
@@ -16,6 +17,7 @@ export function TTextInput({
   lightColor,
   darkColor,
   type,
+  required,
   ...rest
 }: ThemedTextInput) {
   const colorScheme = useColorScheme();
