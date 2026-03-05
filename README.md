@@ -54,3 +54,19 @@ npm run dev
 ```
 
 For us, this will launch both our **frontend and backend** services in our terminal
+
+Required env vars:
+
+```bash
+• EXPO_PUBLIC_CONVEX_URL
+• CONVEX_DEPLOYMENT
+• EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+```
+
+Commands:
+```bash
+• npm install
+• cd apps/frontend && npx convex dev
+• cd apps/frontend && npx expo start
+```
+
