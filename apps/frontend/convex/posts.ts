@@ -1,19 +1,20 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 
 /**
  * FR-8 Display consumer feed
  * Returns newest posts first (simple in-memory sort for Sprint 1).
+ * Paginated results, where we pass a limit to the function i.e 5.
  */
 export const getFeed = query({
-  args: { limit: v.optional(v.number()) },
+  args: { paginationOpts: paginationOptsValidator },
   handler: async (ctx, args) => {
-    const limit = args.limit ?? 50;
-
-    const posts = await ctx.db.query("posts").collect();
-    posts.sort((a, b) => b.createdAt - a.createdAt);
-
-    return posts.slice(0, limit);
+    const posts = await ctx.db
+      .query("posts")
+      .order("desc") // descending order
+      .paginate(args.paginationOpts);
+    return posts;
   },
 });
 
@@ -35,20 +36,26 @@ export const create = mutation({
     authorName: v.optional(v.string()),
     title: v.string(),
     body: v.string(),
+    authorId: v.string(),
+    imageUrl: v.string(),
   },
   handler: async (ctx, args) => {
     const now = Date.now();
     const authorName = (args.authorName ?? "Anonymous").trim() || "Anonymous";
+    const authorId = args.authorId;
     const title = args.title.trim();
     const body = args.body.trim();
+    const imageUrl = args.imageUrl;
 
     if (!title) throw new Error("Title is required");
     if (!body) throw new Error("Body is required");
 
     const id = await ctx.db.insert("posts", {
       authorName,
+      authorId,
       title,
       body,
+      imageUrl,
       createdAt: now,
       updatedAt: now,
     });
@@ -111,5 +118,16 @@ export const remove = mutation({
 
     await ctx.db.delete(args.id);
     return true;
+  },
+});
+
+export const queryOwnBusinessPosts = query({
+  args: { id: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("posts")
+      .withIndex("authorId", (q) => q.eq("authorId", args.id))
+      .order("desc")
+      .collect();
   },
 });

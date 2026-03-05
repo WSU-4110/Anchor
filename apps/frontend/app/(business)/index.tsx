@@ -3,18 +3,19 @@ import { TText } from "@/components/themedComponents/themed-text";
 import { TView } from "@/components/themedComponents/themed-view";
 import useOrgDetails from "@/hooks/use-org-details";
 import { Image } from "expo-image";
-import { BriefcaseBusiness } from "lucide-react-native";
-import { useColorScheme, Pressable } from "react-native";
-import { MotiView } from "moti";
-import { Skeleton } from "moti/skeleton";
-import { Spacer } from "@/components/spacer";
+import { FlatList, Text, View } from "react-native";
+import { TButton } from "@/components/themedComponents/themed-button";
+import { useGetOwnBusinessPosts } from "@/convex/queries";
+import { Loader2 } from "lucide-react-native";
+import PostViewSmall from "@/components/posts/postSmall";
+import { useState } from "react";
+import PostViewFull from "@/components/posts/postViewFull";
 
 export default function HomeScreen() {
-  const { logoUrl } = useOrgDetails();
-  const colorScheme = useColorScheme();
-  const light = colorScheme === "light";
+  const { logoUrl, name, id } = useOrgDetails();
+  const { data, isLoading, isError, error } = useGetOwnBusinessPosts(id);
+  const [changeView, setChangeView] = useState<boolean>(false);
 
-  const colorMode = light ? "dark" : "light";
   return (
     <TView className="flex-1 p-12 ">
       <TView className="flex flex-row justify-between items-center w-full">
@@ -31,73 +32,101 @@ export default function HomeScreen() {
         </TView>
 
         <TView className="mb-4">
-          <AddPost />
+          <AddPost authorName={name} authorId={id} />
         </TView>
       </TView>
 
-      <TView className="flex flex-row gap-4">
-        <TView className="p-5 rounded-3xl bg-black/10 border border-white/15 w-1/2">
-          <TView className="flex-row items-center mb-6 gap-2">
-            <TText className="font-bold uppercase tracking-widest text-xs">
-              Followers
-            </TText>
-          </TView>
-          <TText
-            style={{ fontSize: 25 }}
-            className="inset-0 pl-4 text-3xl font-bold"
-          >
-            20
-          </TText>
-        </TView>
-        <TView className="p-5 rounded-3xl bg-black/10 border border-white/15 w-1/2">
-          <TView className="flex-row items-center mb-6 gap-2">
-            <TText className="font-bold uppercase tracking-widest text-xs">
-              Posts
-            </TText>
-          </TView>
-          <TText
-            style={{ fontSize: 25 }}
-            className="inset-0 pl-4 text-3xl font-bold"
-          >
-            12
-          </TText>
-        </TView>
+      <TView className="flex flex-row gap-4 items-center justify-center ">
+        <View className="flex flex-row  gap-8">
+          <View className="flex flex-col items-center">
+            <TText>14</TText>
+            <TText>Posts</TText>
+          </View>
+          <View className="flex flex-col items-center">
+            <TText>20</TText>
+
+            <TText>Followers</TText>
+          </View>
+          <View className="flex flex-col items-center">
+            <TText>0</TText>
+            <TText>Events</TText>
+          </View>
+        </View>
       </TView>
-      <TView className="mt-4 w-[320px] ">
-        <TView className="p-5 rounded-3xl bg-black/10 border border-white/15 ">
-          <TView className="flex-row items-center mb-6 gap-2">
-            <BriefcaseBusiness
-              color={colorScheme === "dark" ? "#aac7b6" : "black"}
-            />
-            <TText className="font-bold uppercase tracking-widest text-xs">
-              Profile Analytics
-            </TText>
-          </TView>
-          <Pressable>
-            <MotiView
-              transition={{
-                type: "timing",
-              }}
-              animate={{
-                backgroundColor: light ? "#3c6e71" : "#061f20",
-              }}
-            >
-              <Skeleton
-                colorMode={colorMode}
-                radius="round"
-                height={75}
-                width={75}
-              />
-              <Spacer />
-              <Skeleton colorMode={colorMode} width={250} />
-              <Spacer height={8} />
-              <Skeleton colorMode={colorMode} width={"100%"} />
-              <Spacer height={8} />
-              <Skeleton colorMode={colorMode} width={"100%"} />
-            </MotiView>
-          </Pressable>
-        </TView>
+      <TView className="flex flex-row gap-2 mb-2">
+        <TButton
+          style={{
+            width: 150,
+            height: 35,
+          }}
+          onPress={() => {}}
+          type="secondary"
+        >
+          <View className="flex flex-row items-center">
+            <Text>Edit Profile</Text>
+          </View>
+        </TButton>
+        <TButton
+          style={{
+            width: 150,
+            height: 35,
+          }}
+          onPress={() => {}}
+          type="secondary"
+        >
+          <View className="flex flex-row items-center">
+            <Text>Share Profile</Text>
+          </View>
+        </TButton>
       </TView>
+      <View>
+        {isLoading && (
+          <View className="flex items-center justify-center">
+            <Loader2 className="animate-spin" />
+          </View>
+        )}
+      </View>
+
+      <View>
+        {isError && (
+          <View className="flex items-center justify-center">
+            <Text>There was an error: {String(error)}</Text>
+          </View>
+        )}
+      </View>
+      <View>
+        {data && (
+          <FlatList
+            key={`flatlist-${changeView === false ? 3 : 1}`}
+            data={data}
+            renderItem={({ item }) => (
+              <View>
+                {changeView === false ? (
+                  <PostViewSmall
+                    imageUrl={item.imageUrl}
+                    changeView={changeView}
+                    setChangeView={setChangeView}
+                  />
+                ) : (
+                  <View>
+                    <PostViewFull
+                      post={{
+                        authorName: item.authorName,
+                        imageUrl: item.imageUrl,
+                        title: item.title,
+                        body: item.body,
+                      }}
+                      changeView={changeView}
+                      setChangeView={setChangeView}
+                    />
+                  </View>
+                )}
+              </View>
+            )}
+            numColumns={changeView === false ? 3 : 1}
+          />
+        )}
+      </View>
     </TView>
   );
 }

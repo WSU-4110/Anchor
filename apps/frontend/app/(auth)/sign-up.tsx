@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Text, TextInput, Button } from "react-native";
+import { Text, TextInput, Button, View } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { TView } from "@/components/themedComponents/themed-view";
@@ -8,7 +8,7 @@ import { TText } from "@/components/themedComponents/themed-text";
 import LottieView from "lottie-react-native";
 import SignUpFormContainer from "@/components/sign-up-container";
 import { Account } from "@/constants/types";
-import "../../global.css"
+import "../../global.css";
 import { TTextInput } from "@/components/themedComponents/themed-textInput";
 import { TButton } from "@/components/themedComponents/themed-button";
 export default function Page() {
@@ -17,24 +17,24 @@ export default function Page() {
   const { type } = useLocalSearchParams<{ type: string }>();
 
   const [account, setAccount] = React.useState<Account>({
-    emailAddress : "",
-    password : ""
-  })
+    emailAddress: "",
+    password: "",
+  });
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
     if (!isLoaded) return;
-    const {emailAddress, password} = account;
+    const { emailAddress, password } = account;
     // Start sign-up process using email and password provided
     try {
       await signUp.create({
         emailAddress,
         password,
         unsafeMetadata: {
-            initialRole: type,
-          },
+          initialRole: type,
+        },
       });
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
@@ -52,25 +52,24 @@ export default function Page() {
         code,
       });
 
-      if (signUpAttempt.status === 'complete') {
-              await setActive({
-                session: signUpAttempt.createdSessionId,
-                navigate: async ({ session }) => {
-                  if (session?.currentTask) {
-                    // Check for tasks and navigate to custom UI to help users resolve them
-                    // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-                    console.log(session?.currentTask)
-                    return
-                  }
-                  if(type==="business"){
-                    router.replace("/(auth-business)")
-                  }else{
-                    router.replace("/(home)")
-
-                  }
-                },
-              })
-            }else {
+      if (signUpAttempt.status === "complete") {
+        await setActive({
+          session: signUpAttempt.createdSessionId,
+          navigate: async ({ session }) => {
+            if (session?.currentTask) {
+              // Check for tasks and navigate to custom UI to help users resolve them
+              // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
+              console.log(session?.currentTask);
+              return;
+            }
+            if (type === "business") {
+              router.replace("/(auth-business)");
+            } else {
+              router.replace("/(home)");
+            }
+          },
+        });
+      } else {
         console.error(JSON.stringify(signUpAttempt, null, 2));
       }
     } catch (err) {
@@ -81,10 +80,12 @@ export default function Page() {
   if (pendingVerification) {
     return (
       <TView className="flex-1 justify-center items-center">
-        <TText type="default" className="mt-24">Verify your email</TText>
+        <TText type="default" className="mt-24">
+          Verify your email
+        </TText>
         <TTextInput
-        type="default"
-        className="w-1/2"
+          type="default"
+          className="w-1/2"
           style={{
             color: "white",
           }}
@@ -100,33 +101,37 @@ export default function Page() {
 
   return (
     <TView className="flex-1 p-12">
-      <TView className="flex flex-row  mb-8 mt-4 ">
-        <TView className="flex align-start">
-          <ArrowBigLeft
-            color="white"
-            onPress={() => {
-              router.back();
-            }}
-          />
-        </TView>
-
-        <TView className="flex flex-row justify-center items-center w-full pr-12">
-          <TText type="title">Register</TText>
-        </TView>
-        <TView />
-      </TView>
-      <TView className="gap-4 flex items-center min-h-screen w-full">
-        <LottieView
-          source={require("../../assets/animations/lottie-animation.json")}
-          autoPlay
-          loop
-          style={{
-            width: 300,
-            height: 300,
-            borderColor: "#FFF",
+      <TView className="flex flex-row gap-[64px] mb-8 mt-4">
+        <ArrowBigLeft
+          color="white"
+          onPress={() => {
+            router.back();
           }}
         />
-        <SignUpFormContainer type={type} account={account} setAccount={setAccount} onSignUpPress={onSignUpPress}/>
+        <TText className="mr-32" type="title">
+          Register
+        </TText>
+      </TView>
+      <TView />
+      <TView className="gap-4 flex items-center h-64 w-full">
+        <View className="h-80 w-80">
+          <LottieView
+            source={require("../../assets/animations/lottie-animation.json")}
+            autoPlay
+            loop
+            style={{
+              width: 300,
+              height: 300,
+              borderColor: "#FFF",
+            }}
+          />
+        </View>
+        <SignUpFormContainer
+          type={type}
+          account={account}
+          setAccount={setAccount}
+          onSignUpPress={onSignUpPress}
+        />
       </TView>
     </TView>
   );

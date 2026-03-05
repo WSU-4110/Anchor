@@ -10,6 +10,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import TanStackQueryProvider from "@/providers/tanStackProvider";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -19,12 +20,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-        {/* CRITICAL: ClerkLoaded prevents navigation from starting before the auth state is ready */}
-        <ClerkLoaded>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <Stack screenOptions={{ headerShown: false }} />
-          </GestureHandlerRootView>
-        </ClerkLoaded>
+        <TanStackQueryProvider>
+          <ClerkLoaded>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false }} />
+            </GestureHandlerRootView>
+          </ClerkLoaded>
+        </TanStackQueryProvider>
       </ClerkProvider>
     </ThemeProvider>
   );

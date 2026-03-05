@@ -1,19 +1,23 @@
-import { Spacer } from "@/components/spacer";
+import PostViewFull from "@/components/posts/postViewFull";
 import { TScrollView } from "@/components/themedComponents/themed-scrollView";
 import { TText } from "@/components/themedComponents/themed-text";
 import { TView } from "@/components/themedComponents/themed-view";
+import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-expo";
+import { usePaginatedQuery } from "convex/react";
 import { Image } from "expo-image";
-import { MotiView } from "moti";
-import { Skeleton } from "moti/skeleton";
-import { useColorScheme, View } from "react-native";
+import { View } from "react-native";
 
 export default function HomeScreen() {
   const { user } = useUser();
-  const colorScheme = useColorScheme();
-  const light = colorScheme === "light";
 
-  const colorMode = light ? "dark" : "light";
+  const { results, status, loadMore } = usePaginatedQuery(
+    api.posts.getFeed,
+    {},
+    {
+      initialNumItems: 12,
+    },
+  );
   return (
     <TView className="flex-1 p-12">
       {user && (
@@ -36,77 +40,24 @@ export default function HomeScreen() {
             </TView>
           </TView>
           <TScrollView className="mt-24 gap-8 w-full">
-            <View className="border border-white/30 p-4 mb-4 rounded-xl">
-              <MotiView
-                transition={{
-                  type: "timing",
-                }}
-                animate={{
-                  backgroundColor: light ? "#3c6e71" : "#061f20",
-                }}
-              >
-                <Skeleton
-                  colorMode={colorMode}
-                  radius="round"
-                  height={75}
-                  width={75}
-                />
-                <Spacer />
-                <Skeleton colorMode={colorMode} width={250} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-              </MotiView>
-            </View>
-
-            <View className="border border-white/30 p-4 rounded-xl">
-              <MotiView
-                transition={{
-                  type: "timing",
-                }}
-                animate={{
-                  backgroundColor: light ? "#3c6e71" : "#061f20",
-                }}
-              >
-                <Skeleton
-                  colorMode={colorMode}
-                  radius="round"
-                  height={75}
-                  width={75}
-                />
-                <Spacer />
-                <Skeleton colorMode={colorMode} width={250} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-              </MotiView>
-            </View>
-
-            <View className="border border-white/30 p-4 mt-4 rounded-xl">
-              <MotiView
-                transition={{
-                  type: "timing",
-                }}
-                animate={{
-                  backgroundColor: light ? "#3c6e71" : "#061f20",
-                }}
-              >
-                <Skeleton
-                  colorMode={colorMode}
-                  radius="round"
-                  height={75}
-                  width={75}
-                />
-                <Spacer />
-                <Skeleton colorMode={colorMode} width={250} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-                <Spacer height={8} />
-                <Skeleton colorMode={colorMode} width={"100%"} />
-              </MotiView>
-            </View>
+            {results && (
+              <View>
+                {results.map((item) => (
+                  <View key={item._id}>
+                    <PostViewFull
+                      post={{
+                        authorName: item.authorName,
+                        imageUrl: item.imageUrl,
+                        title: item.title,
+                        body: item.body,
+                      }}
+                      changeView
+                      setChangeView={() => {}}
+                    />
+                  </View>
+                ))}
+              </View>
+            )}
           </TScrollView>
         </View>
       )}
