@@ -10,25 +10,39 @@ export const current = query({
 });
 
 export const upsertFromClerk = internalMutation({
-  args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
-  async handler(ctx, { data }) {
-    const userAttributes = {
-      email: data.email_addresses[0].email_address,
-      clerkUserId: data.id,
-      firstName: data.first_name ?? undefined,
-      lastName: data.last_name ?? undefined,
-      imageUrl: data.image_url ?? undefined,
-    };
+  args: { data: v.any() }, // Clerk's webhook data is complex, so v.any() is easiest here
+  handler: async (ctx, { data }) => {
+    const clerkUserId = data.id;
+    const email = data.email_addresses[0]?.email_address;
+    const firstName = data.first_name;
+    const lastName = data.last_name;
+    const imageUrl = data.image_url;
 
-    const user = await userByExternalId(ctx, data.id);
-    if (user === null) {
-      await ctx.db.insert("users", userAttributes);
+    // Extract the custom field from unsafe_metadata
+    const role = data.unsafe_metadata?.role;
+
+    const existingUser = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", clerkUserId))
+      .unique();
+
+    const userProps = {
+      email,
+      clerkUserId,
+      firstName,
+      lastName,
+      imageUrl,
+      role, // This will now be "business" or whatever was passed from the frontend
+    };
+    console.log(userProps);
+
+    if (existingUser) {
+      await ctx.db.patch(existingUser._id, userProps);
     } else {
-      await ctx.db.patch(user._id, userAttributes);
+      await ctx.db.insert("users", userProps);
     }
   },
 });
-
 export const deleteFromClerk = internalMutation({
   args: { clerkUserId: v.string() },
   async handler(ctx, { clerkUserId }) {
@@ -64,3 +78,25 @@ async function userByExternalId(ctx: QueryCtx, clerkUserId: string) {
     .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", clerkUserId))
     .unique();
 }
+
+export const getUsersByRole = query({
+  args: {},
+  handler: async (ctx, args) => {
+    const users = await ctx.db
+      .query("users")
+      .withIndex("by_role")
+      .order("desc");
+
+    return users;
+  },
+});
+export const getFeed = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
+    const posts = await ctx.db
+      .query("posts")
+      .order("desc") // descending order
+      .paginate(args.paginationOpts);
+    return posts;
+  },
+});

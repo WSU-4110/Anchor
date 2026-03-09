@@ -18,10 +18,13 @@ export default defineSchema({
   users: defineTable({
     email: v.string(),
     clerkUserId: v.string(),
-    firstName: v.optional(v.string()),
-    lastName: v.optional(v.string()),
-    imageUrl: v.optional(v.string()),
-  }).index("byClerkUserId", ["clerkUserId"]),
+    firstName: v.union(v.string(), v.null()),
+    lastName: v.union(v.string(), v.null()),
+    imageUrl: v.union(v.string(), v.null()),
+    role: v.optional(v.string()),
+  })
+    .index("byClerkUserId", ["clerkUserId"])
+    .index("by_role", ["role"]),
 
   savedPosts: defineTable({
     userKey: v.string(), // later: Clerk userId

@@ -33,7 +33,7 @@ export default function Page() {
         emailAddress,
         password,
         unsafeMetadata: {
-          initialRole: type,
+          role: type,
         },
       });
 
