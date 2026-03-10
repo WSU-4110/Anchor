@@ -90,13 +90,3 @@ export const getUsersByRole = query({
     return users;
   },
 });
-export const getFeed = query({
-  args: { paginationOpts: paginationOptsValidator },
-  handler: async (ctx, args) => {
-    const posts = await ctx.db
-      .query("posts")
-      .order("desc") // descending order
-      .paginate(args.paginationOpts);
-    return posts;
-  },
-});

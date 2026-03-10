@@ -15,6 +15,10 @@ export default defineSchema({
     .index("by_createdAt", ["createdAt"])
     .index("authorId", ["authorId"]),
 
+  businesses: defineTable({
+    businessName: v.string(),
+    businessId: v.string(),
+  }),
   users: defineTable({
     email: v.string(),
     clerkUserId: v.string(),
