@@ -9,19 +9,21 @@ export default function TabLayout() {
   return (
     <ConvexProvider client={convex}>
       <NativeTabs>
-        <NativeTabs.Trigger name="index">
-          <Label>Home</Label>
-          <Icon sf="house.fill" drawable="custom_android_drawable" />
-        </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="search">
-          <Icon sf="magnifyingglass" drawable="custom_settings_drawable" />
-          <Label>Search</Label>
-        </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="settings">
-          <Icon sf="gear" drawable="custom_settings_drawable" />
-          <Label>Settings</Label>
-        </NativeTabs.Trigger>
-      </NativeTabs>
+  <NativeTabs.Trigger name="index">
+    <Label>Home</Label>
+    <Icon sf="house.fill" drawable="custom_android_drawable" />
+  </NativeTabs.Trigger>
+
+  <NativeTabs.Trigger name="map">
+    <Label>Map</Label>
+    <Icon sf="map.fill" />
+  </NativeTabs.Trigger>
+
+  <NativeTabs.Trigger name="settings">
+    <Icon sf="gear" drawable="custom_settings_drawable" />
+    <Label>Settings</Label>
+  </NativeTabs.Trigger>
+</NativeTabs>
     </ConvexProvider>
   );
 }
