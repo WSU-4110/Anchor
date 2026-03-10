@@ -85,10 +85,7 @@ export default function Page() {
         </TText>
         <TTextInput
           type="default"
-          className="w-1/2"
-          style={{
-            color: "white",
-          }}
+          className="w-3/4"
           value={code}
           placeholder="Enter your verification code"
           placeholderTextColor="#666666"

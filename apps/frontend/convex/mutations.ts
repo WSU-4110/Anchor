@@ -6,3 +6,13 @@ export function useCreatePost() {
   const mutationFn = useConvexMutation(api.posts.create);
   return useMutation({ mutationFn });
 }
+
+export function useCreateBusiness() {
+  const mutationFn = useConvexMutation(api.businesses.createBusiness);
+  return useMutation({ mutationFn });
+}
+
+export function useUpdateBusiness() {
+  const mutationFn = useConvexMutation(api.businesses.updateBusiness);
+  return useMutation({ mutationFn });
+}

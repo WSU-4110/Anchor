@@ -8,3 +8,10 @@ export function useGetOwnBusinessPosts(id: string) {
   );
   return { data, isLoading, isError, error };
 }
+
+export function useGetBusiness(userId: string) {
+  const { data, isLoading, isError, error } = useQuery(
+    convexQuery(api.businesses.queryBusinessWithId, { userId: userId }),
+  );
+  return { data, isLoading, isError, error };
+}
