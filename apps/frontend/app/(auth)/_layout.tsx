@@ -10,7 +10,7 @@ export default function UnAuthenticatedLayout() {
   if (isSignedIn) {
     const memberships = user?.organizationMemberships || [];
     const isBusinessUser = memberships.length > 0;
-    const intendedRole = user?.unsafeMetadata?.initialRole;
+    const intendedRole = user?.unsafeMetadata?.role;
 
     // 1. If they are in a business org, send to business dashboard
     if (isBusinessUser) {
