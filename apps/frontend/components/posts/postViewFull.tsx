@@ -1,7 +1,7 @@
 import { Post } from "@/constants/types";
 import { Image } from "expo-image";
-import { Building2, Heart } from "lucide-react-native";
-import { TouchableOpacity, View } from "react-native";
+import { Building2, Heart, Share2 } from "lucide-react-native";
+import { Share, TouchableOpacity, View } from "react-native";
 import { TText } from "../themedComponents/themed-text";
 
 type PostViewFullProps = {
@@ -9,11 +9,23 @@ type PostViewFullProps = {
   setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
   changeView: boolean;
 };
+
 export default function PostViewFull({
   post,
   changeView,
   setChangeView,
 }: PostViewFullProps) {
+  const handleShare = async () => {
+    try {
+      const placeholderLink = "https://example.com/post";
+      await Share.share({
+        message: `${post.title ?? ""}\n\n${post.body ?? ""}\n\n${placeholderLink}`,
+      });
+    } catch (error) {
+      console.error("Error sharing post", error);
+    }
+  };
+
   return (
     <View>
       <TouchableOpacity
@@ -39,12 +51,18 @@ export default function PostViewFull({
           source={post.imageUrl}
         />
 
-        <View className="flex flex-row justify-between mt-2 mx-2 ">
-          <View className="flex flex-row gap-2 items-center ">
+        <View className="flex flex-row justify-between mt-2 mx-2">
+          <View className="flex flex-row gap-2 items-center">
             <Building2 color="#aac7b6" />
             <TText className="text-md text-white">{post.authorName}</TText>
           </View>
-          <Heart className="pr-2" color="#aac7b6" />
+
+          <View className="flex flex-row items-center gap-4">
+            <Heart color="#aac7b6" />
+            <TouchableOpacity onPress={handleShare}>
+              <Share2 color="#aac7b6" />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View className="mx-2">

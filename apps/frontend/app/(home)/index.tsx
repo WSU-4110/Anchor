@@ -11,19 +11,33 @@ import { View } from "react-native";
 export default function HomeScreen() {
   const { user } = useUser();
 
-  const { results, status, loadMore } = usePaginatedQuery(
+  const { results } = usePaginatedQuery(
     api.posts.getFeed,
     {},
     {
       initialNumItems: 12,
     },
   );
+
+  const fallbackPosts =
+    results && results.length > 0
+      ? results
+      : [
+          {
+            _id: "demo-post",
+            authorName: "Anchor Demo Business",
+            imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
+            title: "Fresh Produce Drop",
+            body: "Testing the new share feature for Sprint 2.",
+          },
+        ];
+
   return (
     <TView className="flex-1 p-12">
       {user && (
         <View>
           <TView className="flex flex-row justify-between items-center w-full">
-            <TView className="w-16 h-16 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4 ">
+            <TView className="w-16 h-16 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4">
               <Image
                 source={user.imageUrl}
                 className="object-cover rounded-full"
@@ -39,25 +53,24 @@ export default function HomeScreen() {
               <TText>Your Feed</TText>
             </TView>
           </TView>
+
           <TScrollView className="mt-24 gap-8 w-full">
-            {results && (
-              <View>
-                {results.map((item) => (
-                  <View key={item._id}>
-                    <PostViewFull
-                      post={{
-                        authorName: item.authorName,
-                        imageUrl: item.imageUrl,
-                        title: item.title,
-                        body: item.body,
-                      }}
-                      changeView
-                      setChangeView={() => { }}
-                    />
-                  </View>
-                ))}
-              </View>
-            )}
+            <View>
+              {fallbackPosts.map((item) => (
+                <View key={item._id}>
+                  <PostViewFull
+                    post={{
+                      authorName: item.authorName,
+                      imageUrl: item.imageUrl,
+                      title: item.title,
+                      body: item.body,
+                    }}
+                    changeView
+                    setChangeView={() => {}}
+                  />
+                </View>
+              ))}
+            </View>
           </TScrollView>
         </View>
       )}
