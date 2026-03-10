@@ -33,3 +33,8 @@ export type Post = {
   updatedAt: string;
   imageUrl: string;
 };
+
+export type Business = {
+  businessName: string;
+  businessId: string;
+};

@@ -27,6 +27,12 @@ export default function SetUp({ businessName, setBusinessName }: SetUpProps) {
     if (!businessName || !createOrganization) return;
     try {
       await createOrganization({ name: businessName });
+      /*
+       * In convex:
+       * chceck if business name exists
+       * if not we can add the business name to the businesses table
+       * else prompt the user to renter a new business name
+       * */
       router.replace("/(business)");
     } catch (err) {
       console.error("Org Creation Error", err);

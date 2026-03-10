@@ -52,7 +52,7 @@ export default function HomeScreen() {
                         body: item.body,
                       }}
                       changeView
-                      setChangeView={() => {}}
+                      setChangeView={() => { }}
                     />
                   </View>
                 ))}
