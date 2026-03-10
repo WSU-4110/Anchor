@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { Building2, Heart, Share2 } from "lucide-react-native";
 import { Share, TouchableOpacity, View } from "react-native";
 import { TText } from "../themedComponents/themed-text";
+import { useState } from "react";
 
 type PostViewFullProps = {
   post: Partial<Post>;
@@ -15,6 +16,7 @@ export default function PostViewFull({
   changeView,
   setChangeView,
 }: PostViewFullProps) {
+  const [sharePost, setSharedPost] = useState<boolean>(false);
   const handleShare = async () => {
     try {
       const placeholderLink = "https://example.com/post";
@@ -58,7 +60,14 @@ export default function PostViewFull({
           </View>
 
           <View className="flex flex-row items-center gap-4">
-            <Heart color="#aac7b6" />
+            <TouchableOpacity
+              onPress={() => {
+                setSharedPost(!sharePost);
+              }}
+              className="z-50"
+            >
+              <Heart color="#aac7b6" fill={sharePost ? "red" : ""} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleShare}>
               <Share2 color="#aac7b6" />
             </TouchableOpacity>
