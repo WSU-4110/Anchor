@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as businesses from "../businesses.js";
 import type * as http from "../http.js";
 import type * as mutations from "../mutations.js";
 import type * as posts from "../posts.js";
@@ -24,6 +25,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  businesses: typeof businesses;
   http: typeof http;
   mutations: typeof mutations;
   posts: typeof posts;

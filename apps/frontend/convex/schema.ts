@@ -18,7 +18,11 @@ export default defineSchema({
   businesses: defineTable({
     businessName: v.string(),
     businessId: v.string(),
-  }),
+    businessLocation: v.string(),
+    businessLogo: v.optional(v.string()),
+    created_by: v.string(),
+  }).index("created_by", ["created_by"]),
+
   users: defineTable({
     email: v.string(),
     clerkUserId: v.string(),
