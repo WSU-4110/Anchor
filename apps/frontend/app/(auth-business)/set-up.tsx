@@ -33,7 +33,7 @@ export default function SetUp({ business, setBusiness, userId }: SetUpProps) {
     try {
       await createOrganization({ name: business.businessName });
 
-      createBusiness.mutate({
+      createBusiness.mutateAsync({
         businessName: business.businessName,
         businessLocation: business.businessLocation,
         businessId: business.businessId,

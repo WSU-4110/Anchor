@@ -3,8 +3,8 @@ import SetUp from "./set-up";
 import { TView } from "@/components/themedComponents/themed-view";
 import { Business } from "@/constants/types";
 import { useUser } from "@clerk/clerk-expo";
-import { View } from "react-native";
 import * as Crypto from "expo-crypto";
+import { Loader2 } from "lucide-react-native";
 
 export default function Page() {
   const { user } = useUser();
@@ -16,8 +16,18 @@ export default function Page() {
   }));
   return (
     <TView className="flex-1">
-      {user && (
-        <SetUp business={business} setBusiness={setBusiness} userId={user.id} />
+      {user ? (
+        <TView>
+          <SetUp
+            business={business}
+            setBusiness={setBusiness}
+            userId={user.id}
+          />
+        </TView>
+      ) : (
+        <TView>
+          <Loader2 className="animate-spin" />
+        </TView>
       )}
     </TView>
   );
