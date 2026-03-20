@@ -20,7 +20,11 @@ export type SignUpFormProps = {
   account: Account;
 };
 
-export type AccountFormProps = {
+export type BusinessAccountFormProps = {
+  user: UserResource;
+  data: Business;
+};
+export type PersonalAccountFormProps = {
   user: UserResource;
 };
 
@@ -37,4 +41,7 @@ export type Post = {
 export type Business = {
   businessName: string;
   businessId: string;
+  businessLocation: string;
+  created_by: string;
+  businessLogo?: string;
 };

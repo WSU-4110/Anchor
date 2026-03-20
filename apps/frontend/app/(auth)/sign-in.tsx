@@ -126,6 +126,9 @@ export default function Page() {
           type="default"
           className="w-1/2"
           value={code}
+          style={{
+            color: "white",
+          }}
           placeholder="Enter verification code"
           placeholderTextColor="#666666"
           onChangeText={(code) => setCode(code)}
@@ -176,6 +179,9 @@ export default function Page() {
         <TTextInput
           className="w-full"
           type={"default"}
+          style={{
+            color: "white",
+          }}
           value={password}
           placeholder="Enter password"
           placeholderTextColor="#666666"

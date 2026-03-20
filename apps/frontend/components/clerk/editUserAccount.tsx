@@ -1,11 +1,11 @@
 import { TView } from "../themedComponents/themed-view";
 import { TTextInput } from "../themedComponents/themed-textInput";
-import { AccountFormProps, UserAccount } from "@/constants/types";
+import { PersonalAccountFormProps, UserAccount } from "@/constants/types";
 import { useState } from "react";
 import { TButton } from "../themedComponents/themed-button";
 import { TText } from "../themedComponents/themed-text";
 
-export default function EditUserAccount({ user }: AccountFormProps) {
+export default function EditUserAccount({ user }: PersonalAccountFormProps) {
   const [userData, setUserData] = useState<UserAccount>({
     firstName: "",
     lastName: "",

@@ -10,7 +10,6 @@ import SignUpFormContainer from "@/components/sign-up-container";
 import { Account } from "@/constants/types";
 import "../../global.css";
 import { TTextInput } from "@/components/themedComponents/themed-textInput";
-import { TButton } from "@/components/themedComponents/themed-button";
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
@@ -85,7 +84,7 @@ export default function Page() {
         </TText>
         <TTextInput
           type="default"
-          className="w-1/2"
+          className="w-3/4"
           style={{
             color: "white",
           }}

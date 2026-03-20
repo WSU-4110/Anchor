@@ -22,15 +22,13 @@ export function TTextInput({
 }: ThemedTextInput) {
   const colorScheme = useColorScheme();
 
-  return colorScheme === "dark" ? (
+  const themeStyle =
+    colorScheme === "dark" ? darkTheme.default : lightTheme.default;
+
+  return (
     <TextInput
-      style={[, type === "default" ? darkTheme.default : undefined]}
-      {...rest}
-    />
-  ) : (
-    <TextInput
-      style={[, type === "default" ? lightTheme.default : undefined]}
-      {...rest}
+      style={[themeStyle, style]}
+      {...rest} // value and onChangeText stay attached to the same native element
     />
   );
 }
@@ -38,7 +36,7 @@ export function TTextInput({
 const darkTheme = StyleSheet.create({
   default: {
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
     backgroundColor: "#aac7b6",
     color: "#061f20",
   },
@@ -47,7 +45,7 @@ const darkTheme = StyleSheet.create({
 const lightTheme = StyleSheet.create({
   default: {
     borderRadius: 10,
-    padding: 10,
+    padding: 20,
     backgroundColor: "#061f20",
     color: "#FFF",
   },
