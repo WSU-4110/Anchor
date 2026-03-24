@@ -36,7 +36,7 @@ export function TTextInput({
 const darkTheme = StyleSheet.create({
   default: {
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     backgroundColor: "#aac7b6",
     color: "#061f20",
   },
@@ -45,7 +45,7 @@ const darkTheme = StyleSheet.create({
 const lightTheme = StyleSheet.create({
   default: {
     borderRadius: 10,
-    padding: 20,
+    padding: 10,
     backgroundColor: "#061f20",
     color: "#FFF",
   },

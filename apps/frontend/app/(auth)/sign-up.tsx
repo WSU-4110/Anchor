@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Text, TextInput, Button, View } from "react-native";
+import { Button, View } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { TView } from "@/components/themedComponents/themed-view";
 import { ArrowBigLeft } from "lucide-react-native";
 import { TText } from "@/components/themedComponents/themed-text";
@@ -10,6 +10,7 @@ import SignUpFormContainer from "@/components/sign-up-container";
 import { Account } from "@/constants/types";
 import "../../global.css";
 import { TTextInput } from "@/components/themedComponents/themed-textInput";
+import ErrorDisplay from "@/components/error-display";
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
@@ -21,10 +22,16 @@ export default function Page() {
   });
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
+  const [error, setError] = React.useState<string>();
+  const [isError, setIsError] = React.useState<boolean>(false);
 
   // Handle submission of sign-up form
   const onSignUpPress = async () => {
     if (!isLoaded) return;
+    if (!account.emailAddress || !account.password) {
+      setError("Please fill out form");
+      setIsError(true);
+    }
     const { emailAddress, password } = account;
     // Start sign-up process using email and password provided
     try {
@@ -40,7 +47,8 @@ export default function Page() {
 
       setPendingVerification(true);
     } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      setError("There was an error signing up");
+      setIsError(true);
     }
   };
   const onVerifyPress = async () => {
@@ -100,6 +108,13 @@ export default function Page() {
 
   return (
     <TView className="flex-1 p-12">
+      {error && isError && (
+        <ErrorDisplay
+          errorMessage={error}
+          onClose={isError}
+          setOnClose={setIsError}
+        />
+      )}
       <TView className="flex flex-row gap-[64px] mb-8 mt-4">
         <ArrowBigLeft
           color="white"
