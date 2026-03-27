@@ -1,4 +1,4 @@
-# Anchor Monorepo
+# Anchor 
 
 This is the official monorepo for Anchor during the Winter 2026 semester
 
@@ -10,7 +10,7 @@ Add a brief project description here. A logo or screenshot would be also nice.
 
 - Alessandro Bongiorno: Fullstack Developer
 - Trevor Lee: Fullstack Developer
-- Isaac Lopez: Backend Developer
+- Isaac Lopez: Fullstack Developer
 
 ## Getting Started
 
@@ -19,54 +19,44 @@ Add a brief project description here. A logo or screenshot would be also nice.
 ```
 node >= 18
 npm >= 10.9.2
-uv >= 0.9.21
-python >=3.14
 ```
 
-As mentioned before this is a monorepo created using [turborepo](https://turborepo.dev/docs/getting-started) this project features two main applications
+### Overview
 
-### Frontend Application
+This project was built using expo and react native, meaning that this app can work on most platforms including
+ios, android, and the web.
 
-Built using [react native](https://reactnative.dev/docs/getting-started) and [expo](https://docs.expo.dev/)
 
-### Backend Application
-
-Our backend application is built using [Python](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/), and [uv](https://docs.astral.sh/uv/)
-
-### Local Deployment
-
-On a fresh clone of this repo you will need to run:
-
-```
-npm install
-```
-
-To build this project we can use the following command:
+### Local Deployment 
+To run the application locally using an emulator you can follow these steps:
 
 ```bash
-npm run build
+  
+ npm run dev 
+
 ```
+In your terminal this will bring up a tui which can be used to select which kind of emulator you want to 
+use.
 
-To run this project we can use the following command:
+>[!NOTE] 
+>If you are using a mac, you can use the xcode emulator for apple devices
 
-```bash
-npm run dev
+
+
+
+## Testing 
+For this project we are using [jest](https://jestjs.io/) as our testing suite of choice. 
+
+Under **__tests__** we contain all of our unit tests and it contains the following structure
 ```
-
-For us, this will launch both our **frontend and backend** services in our terminal
-
-Required env vars:
-
-```bash
-• EXPO_PUBLIC_CONVEX_URL
-• CONVEX_DEPLOYMENT
-• EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY
+__tests__
+├── components
+├── convex
+├── hooks
+└── test.tsx
 ```
-
-Commands:
-```bash
-• npm install
-• cd apps/frontend && npx convex dev
-• cd apps/frontend && npx expo start
-```
+To create a new test do the following:
+1. Inside of the appropriate folder create a new file `<filename>.test.tsx`
+2. Make sure to import the `@testing-library/react-native` library.
+3. `describe` is how we label the testing suite inside the file, then  `it` is the actual test you wish to run
 

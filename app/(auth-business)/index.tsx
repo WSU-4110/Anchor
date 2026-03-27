@@ -17,13 +17,7 @@ export default function Page() {
   return (
     <TView className="flex-1">
       {user ? (
-        <TView>
-          <SetUp
-            business={business}
-            setBusiness={setBusiness}
-            userId={user.id}
-          />
-        </TView>
+        <SetUp business={business} setBusiness={setBusiness} userId={user.id} />
       ) : (
         <TView>
           <Loader2 className="animate-spin" />
