@@ -87,59 +87,61 @@ export default function SearchBar({
             key={item.businessId}
           >
             <Text>{item.businessName || "Waiting for Input..."}</Text>
+            {open && (
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={open}
+                onRequestClose={() => {
+                  Alert.alert("Modal has been closed.");
+                  setOpen(!open);
+                }}
+              >
+                <View
+                  onTouchEnd={() => {
+                    setOpen(!open);
+                  }}
+                  className="flex-1 pt-24 px-8 items-center border-1 border-black rounded-3xl w-full"
+                >
+                  <View className="p-5 rounded-3xl bg-black/10 border border-white/15 bg-white w-[300px]">
+                    <View className="flex-col items-center justify-center mb-2  gap-2">
+                      <View className="w-24 h-24 rounded-full border-1 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4 ">
+                        <Image
+                          source={item.businessLogo || ""}
+                          className="object-cover rounded-full"
+                          style={{
+                            width: 70,
+                            height: 70,
+                            borderRadius: 40,
+                          }}
+                        />
+                      </View>
+                      <Text className="text-2xl font-bold">{businessName}</Text>
+                    </View>
+                    <View className="flex flex-row gap-4 items-center justify-center ">
+                      <View className="flex flex-row  gap-8">
+                        <View className="flex flex-col items-center">
+                          <TText>1</TText>
+                          <TText>Posts</TText>
+                        </View>
+                        <View className="flex flex-col items-center">
+                          <TText>20</TText>
+
+                          <TText>Followers</TText>
+                        </View>
+                        <View className="flex flex-col items-center">
+                          <TText>0</TText>
+                          <TText>Events</TText>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+            )}
           </TouchableOpacity>
         ))}
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={open}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setOpen(!open);
-        }}
-      >
-        <View
-          onTouchEnd={() => {
-            setOpen(!open);
-          }}
-          className="flex-1 pt-24 px-8 items-center border-1 border-black rounded-3xl w-full"
-        >
-          <View className="p-5 rounded-3xl bg-black/10 border border-white/15 bg-white w-[300px]">
-            <View className="flex-col items-center justify-center mb-2  gap-2">
-              <View className="w-16 h-16 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20  ">
-                <Image
-                  source={""}
-                  className="object-cover rounded-full"
-                  style={{
-                    width: 35,
-                    height: 35,
-                    borderRadius: 40,
-                  }}
-                />
-              </View>
-              <Text className="text-2xl font-bold">{businessName}</Text>
-            </View>
-            <View className="flex flex-row gap-4 items-center justify-center ">
-              <View className="flex flex-row  gap-8">
-                <View className="flex flex-col items-center">
-                  <TText>1</TText>
-                  <TText>Posts</TText>
-                </View>
-                <View className="flex flex-col items-center">
-                  <TText>20</TText>
-
-                  <TText>Followers</TText>
-                </View>
-                <View className="flex flex-col items-center">
-                  <TText>0</TText>
-                  <TText>Events</TText>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }

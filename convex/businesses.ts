@@ -70,7 +70,7 @@ export const queryBusinessWithId = query({
 export const queryBusinesses = query({
   args: {},
   handler: async (ctx, args) => {
-    const businesses = await ctx.db.query("businesses").order("desc").collect();
+    const businesses = await ctx.db.query("businesses").collect();
     return businesses;
   },
 });
