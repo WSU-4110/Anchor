@@ -1,41 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { TView } from "@/components/themedComponents/themed-view";
 import { TText } from "@/components/themedComponents/themed-text";
 import SearchBar from "@/components/search-bar";
 import { Business } from "@/constants/types";
 
-export default function SearchTab() {
-  const businesses: Business[] = [
-    {
-      businessName: "Anchor",
-      businessId: "1",
-    },
-    {
-      businessName: "Banker",
-      businessId: "2",
-    },
-    {
-      businessName: "Lucky's",
-      businessId: "3",
-    },
-    {
-      businessName: "Green Initiative",
-      businessId: "4",
-    },
-    {
-      businessName: "Yeti",
-      businessId: "5",
-    },
-    {
-      businessName: "Firebase",
-      businessId: "6",
-    },
-  ];
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [uniqueBusinesses, _] = useState<Business[]>(businesses);
+import {useGetAllBusinesses} from "@/convex/queries";
 
-  const filteredItems: Business[] = uniqueBusinesses.filter((e) => {
+type SearchBarProps ={
+  data: Business[]
+}
+export default function SearchTab({data}: SearchBarProps) {
+
+  const [searchQuery, setSearchQuery] = useState<string>("");
+
+  const filteredData = data.filter((e) => {
+    console.log(JSON.stringify(data, null, 2))
     return e.businessName.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -46,14 +26,14 @@ export default function SearchTab() {
           Search Businesses
         </TText>
       </View>
-
+      
       <SearchBar
         searchQuery={searchQuery}
         onChangeText={setSearchQuery}
         data={
           searchQuery.length > 0
-            ? filteredItems
-            : [{ businessName: "", businessId: "" }]
+            ? filteredData
+            : [{ businessName: "", businessId: "", businessLocation: "", created_by: ""}]
         }
       />
     </TView>
