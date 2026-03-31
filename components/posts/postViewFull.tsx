@@ -1,15 +1,10 @@
-import { Post } from "@/constants/types";
+import { PostViewFullProps } from "@/constants/types";
 import { Image } from "expo-image";
 import { Building2, Heart, Share2 } from "lucide-react-native";
-import { Share, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { TText } from "../themedComponents/themed-text";
 import { useState } from "react";
-
-type PostViewFullProps = {
-  post: Partial<Post>;
-  setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
-  changeView: boolean;
-};
+import { handleShare } from "@/lib/helpers";
 
 export default function PostViewFull({
   post,
@@ -17,20 +12,11 @@ export default function PostViewFull({
   setChangeView,
 }: PostViewFullProps) {
   const [sharePost, setSharedPost] = useState<boolean>(false);
-  const handleShare = async () => {
-    try {
-      const placeholderLink = "https://example.com/post";
-      await Share.share({
-        message: `${post.title ?? ""}\n\n${post.body ?? ""}\n\n${placeholderLink}`,
-      });
-    } catch (error) {
-      console.error("Error sharing post", error);
-    }
-  };
 
   return (
     <View>
       <TouchableOpacity
+        testID="change-view-full"
         onPress={() => {
           setChangeView(!changeView);
         }}
@@ -43,6 +29,7 @@ export default function PostViewFull({
         }}
       >
         <Image
+          testID="image-test-full-id"
           contentFit="cover"
           style={{
             flex: 1,
@@ -59,16 +46,24 @@ export default function PostViewFull({
             <TText className="text-md text-white">{post.authorName}</TText>
           </View>
 
-          <View className="flex flex-row items-center gap-4">
+          <View testID="container" className="flex flex-row items-center gap-4">
             <TouchableOpacity
+              testID="share-post-container"
               onPress={() => {
                 setSharedPost(!sharePost);
               }}
               className="z-50"
             >
-              <Heart color="#aac7b6" fill={sharePost ? "red" : ""} />
+              <View testID="heart-icon">
+                <Heart color="#aac7b6" fill={sharePost ? "red" : ""} />
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleShare}>
+            <TouchableOpacity
+              testID="share-post"
+              onPress={() => {
+                handleShare(post.title, post.body);
+              }}
+            >
               <Share2 color="#aac7b6" />
             </TouchableOpacity>
           </View>
