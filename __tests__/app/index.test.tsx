@@ -13,7 +13,7 @@ describe("ModalScreen", () => {
   });
   it("should contain custom text to navigate to sign-in page", () => {
     const { getByText } = render(<ModalScreen />);
-    getByText("Sign in");
+    getByText("Sign in and have a great time");
   });
   it("should use handleNavigation inside modal screen component", () => {
     render(<ModalScreen />);
