@@ -5,37 +5,13 @@ import { TText } from "@/components/themedComponents/themed-text";
 import SearchBar from "@/components/search-bar";
 import { Business } from "@/constants/types";
 
-export default function SearchTab() {
-  const businesses: Business[] = [
-    {
-      businessName: "Anchor",
-      businessId: "1",
-    },
-    {
-      businessName: "Banker",
-      businessId: "2",
-    },
-    {
-      businessName: "Lucky's",
-      businessId: "3",
-    },
-    {
-      businessName: "Green Initiative",
-      businessId: "4",
-    },
-    {
-      businessName: "Yeti",
-      businessId: "5",
-    },
-    {
-      businessName: "Firebase",
-      businessId: "6",
-    },
-  ];
+type SearchBarProps = {
+  data: Business[];
+};
+export default function SearchTab({ data }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [uniqueBusinesses, _] = useState<Business[]>(businesses);
 
-  const filteredItems: Business[] = uniqueBusinesses.filter((e) => {
+  const filteredData = data.filter((e) => {
     return e.businessName.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -52,8 +28,15 @@ export default function SearchTab() {
         onChangeText={setSearchQuery}
         data={
           searchQuery.length > 0
-            ? filteredItems
-            : [{ businessName: "", businessId: "" }]
+            ? filteredData
+            : [
+                {
+                  businessName: "",
+                  businessId: "",
+                  businessLocation: "",
+                  created_by: "",
+                },
+              ]
         }
       />
     </TView>

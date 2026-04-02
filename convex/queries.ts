@@ -15,3 +15,10 @@ export function useGetBusiness(userId: string) {
   );
   return { data, isLoading, isError, error };
 }
+
+export function useGetAllBusinesses() {
+  const { data, isLoading, isError, error } = useQuery(
+    convexQuery(api.businesses.queryBusinesses),
+  );
+  return { data, isLoading, isError, error };
+}

@@ -13,7 +13,7 @@ export default function TabLayout() {
           <Label>Home</Label>
           <Icon sf="house.fill" drawable="custom_android_drawable" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="search">
+        <NativeTabs.Trigger name="search-container">
           <Label>Search</Label>
           <Icon sf="magnifyingglass" drawable="custom_android_drawable" />
         </NativeTabs.Trigger>
