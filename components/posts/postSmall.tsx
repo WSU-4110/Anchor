@@ -1,10 +1,7 @@
+import { PostViewSmallProps } from "@/constants/types";
 import { Image } from "expo-image";
 import { TouchableOpacity } from "react-native";
-type PostViewSmallProps = {
-  imageUrl: string;
-  setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
-  changeView: boolean;
-};
+
 export default function PostViewSmall({
   imageUrl,
   setChangeView,
@@ -12,6 +9,7 @@ export default function PostViewSmall({
 }: PostViewSmallProps) {
   return (
     <TouchableOpacity
+      testID="change-view"
       onPress={() => {
         setChangeView(!changeView);
       }}
@@ -24,6 +22,8 @@ export default function PostViewSmall({
       }}
     >
       <Image
+        alt="Post Image"
+        testID="image-test-id"
         contentFit="cover"
         style={{
           flex: 1,

@@ -60,3 +60,18 @@ To create a new test do the following:
 2. Make sure to import the `@testing-library/react-native` library.
 3. `describe` is how we label the testing suite inside the file, then  `it` is the actual test you wish to run
 
+
+To run your tests:
+
+```bash
+
+npm run test
+
+```
+
+for verbose outputs:
+
+```bash
+
+npm run test -- --verbose
+``

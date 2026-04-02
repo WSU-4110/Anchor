@@ -1,4 +1,3 @@
-import "../global.css";
 import { TView } from "@/components/themedComponents/themed-view";
 import { TText } from "@/components/themedComponents/themed-text";
 import { TButton } from "@/components/themedComponents/themed-button";
@@ -11,14 +10,11 @@ import {
   User,
   LucideIcon,
 } from "lucide-react-native";
+import { handleNavigation } from "@/lib/helpers";
 
 export default function ModalScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-
-  const handleNavigation = (type: "personal" | "business") => {
-    router.push(`/(auth)/sign-up?type=${type}`);
-  };
 
   return (
     <TView className="flex-1 bg-background items-center pt-24 px-6">
@@ -37,15 +33,19 @@ export default function ModalScreen() {
       </TText>
 
       <TView className="flex-row gap-4 justify-center w-full">
-        <AccountTypeCard
-          title="Personal Account"
-          icon={User}
-          isDark={isDark}
-          onPress={() => handleNavigation("personal")}
-          type="secondary"
-        />
+        <View>
+          <AccountTypeCard
+            testId={"personal-navigation"}
+            title="Personal Account"
+            icon={User}
+            isDark={isDark}
+            onPress={() => handleNavigation("personal")}
+            type="secondary"
+          />
+        </View>
 
         <AccountTypeCard
+          testId={"business-navigation"}
           title="Business Account"
           icon={BriefcaseBusiness}
           isDark={isDark}
@@ -72,6 +72,7 @@ export default function ModalScreen() {
  * Reusable Card Component to keep the main render clean
  */
 function AccountTypeCard({
+  testId,
   title,
   icon: Icon,
   isDark,
@@ -83,6 +84,7 @@ function AccountTypeCard({
   isDark: boolean;
   onPress: () => void;
   type: "primary" | "secondary";
+  testId: string;
 }) {
   const iconBg = isDark
     ? type === "primary"
@@ -119,7 +121,10 @@ function AccountTypeCard({
         {title}
       </TText>
 
-      <View className="flex-row items-center justify-center gap-1">
+      <View
+        testID={testId}
+        className="flex-row items-center justify-center gap-1"
+      >
         <TText type="link" className="text-xs">
           Continue
         </TText>

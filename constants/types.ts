@@ -45,3 +45,14 @@ export type Business = {
   created_by: string;
   businessLogo?: string;
 };
+
+export type PostViewSmallProps = {
+  imageUrl: string;
+  setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
+  changeView: boolean;
+};
+export type PostViewFullProps = {
+  post: Partial<Post>;
+  setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
+  changeView: boolean;
+};
