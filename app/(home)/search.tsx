@@ -35,6 +35,7 @@ export default function SearchTab({ data }: SearchBarProps) {
                   businessId: "",
                   businessLocation: "",
                   created_by: "",
+                  businessFollowers: [],
                 },
               ]
         }

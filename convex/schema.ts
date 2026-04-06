@@ -13,15 +13,19 @@ export default defineSchema({
     imageUrl: v.string(),
   })
     .index("by_createdAt", ["createdAt"])
-    .index("authorId", ["authorId"]),
+    .index("authorId", ["authorId"])
+    .index("authorName", ["authorName"]),
 
   businesses: defineTable({
     businessName: v.string(),
     businessId: v.string(),
     businessLocation: v.string(),
     businessLogo: v.optional(v.string()),
+    businessFollowers: v.array(v.string()),
     created_by: v.string(),
-  }).index("created_by", ["created_by"]),
+  })
+    .index("created_by", ["created_by"])
+    .index("businessFollowers", ["businessFollowers"]),
 
   users: defineTable({
     email: v.string(),
@@ -30,6 +34,7 @@ export default defineSchema({
     lastName: v.union(v.string(), v.null()),
     imageUrl: v.union(v.string(), v.null()),
     role: v.optional(v.string()),
+    following: v.array(v.string()),
   })
     .index("byClerkUserId", ["clerkUserId"])
     .index("by_role", ["role"]),

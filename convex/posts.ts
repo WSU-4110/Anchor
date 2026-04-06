@@ -131,3 +131,14 @@ export const queryOwnBusinessPosts = query({
       .collect();
   },
 });
+
+export const queryBusinessPosts = query({
+  args: { businessName: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("posts")
+      .withIndex("authorName", (q) => q.eq("authorName", args.businessName))
+      .order("desc")
+      .collect();
+  },
+});

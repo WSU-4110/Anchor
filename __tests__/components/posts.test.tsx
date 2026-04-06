@@ -69,6 +69,8 @@ describe("Post components", () => {
     };
     const mockSetOnChange = jest.fn();
     const props: PostViewFullProps = {
+      width: 100,
+      height: 100,
       post: post,
       setChangeView: mockSetOnChange,
       changeView: false,
@@ -77,6 +79,8 @@ describe("Post components", () => {
     it("should render PostViewFull with correct imageUrl", () => {
       render(
         <PostViewFull
+          height={props.height}
+          width={props.width}
           post={props.post}
           setChangeView={props.setChangeView}
           changeView={props.changeView}
@@ -89,6 +93,8 @@ describe("Post components", () => {
     it("should change states when TouchableOpacity is pressed", () => {
       const { getByTestId } = render(
         <PostViewFull
+          height={props.height}
+          width={props.width}
           post={props.post}
           setChangeView={props.setChangeView}
           changeView={props.changeView}
@@ -100,6 +106,8 @@ describe("Post components", () => {
     it("should render post details", () => {
       const { getByText } = render(
         <PostViewFull
+          height={props.height}
+          width={props.width}
           post={props.post}
           setChangeView={props.setChangeView}
           changeView={props.changeView}
@@ -114,6 +122,8 @@ describe("Post components", () => {
     it("should change colors of heart icon when liking post", () => {
       const { getByTestId } = render(
         <PostViewFull
+          height={props.height}
+          width={props.width}
           post={props.post}
           setChangeView={props.setChangeView}
           changeView={props.changeView}

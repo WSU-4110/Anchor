@@ -11,6 +11,7 @@ export const createBusiness = mutation({
     businessLocation: v.string(),
     businessId: v.string(),
     created_by: v.string(),
+    businessFollowers: v.array(v.string()),
   },
   handler: async (ctx, args) => {
     const id = await ctx.db.insert("businesses", {
@@ -18,6 +19,7 @@ export const createBusiness = mutation({
       businessId: args.businessId,
       businessLocation: args.businessLocation,
       created_by: args.created_by,
+      businessFollowers: args.businessFollowers,
     });
 
     return id;
@@ -72,5 +74,49 @@ export const queryBusinesses = query({
   handler: async (ctx, args) => {
     const businesses = await ctx.db.query("businesses").collect();
     return businesses;
+  },
+});
+
+export const followBusiness = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const business = await ctx.db
+      .query("businesses")
+      .withIndex("businessFollowers")
+      .unique();
+
+    if (business) {
+      const followers = business.businessFollowers;
+      if (followers.includes(args.userId)) {
+        return; // return if the user is already in the field
+      }
+      followers.push(args.userId);
+      await ctx.db.patch(business._id, {
+        businessFollowers: followers,
+      });
+    }
+  },
+});
+
+export const unFollowBusiness = mutation({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const business = await ctx.db.query("businesses").unique();
+
+    if (business) {
+      if (!business.businessFollowers.includes(args.userId)) {
+        return;
+      }
+      const followers = business.businessFollowers.filter(
+        (follower) => follower !== args.userId,
+      );
+      await ctx.db.patch(business._id, {
+        businessFollowers: followers,
+      });
+    }
   },
 });
