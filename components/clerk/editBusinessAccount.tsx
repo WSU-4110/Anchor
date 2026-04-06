@@ -19,6 +19,7 @@ export default function EditBusinessAccount({
     businessLocation: data.businessLocation,
     businessId: data.businessId,
     created_by: data.created_by,
+    businessFollowers: data.businessFollowers,
   });
 
   const clearForm = () => {
@@ -43,6 +44,7 @@ export default function EditBusinessAccount({
           businessAccount.businessLocation || data.businessLocation,
         businessId: data.businessId,
         created_by: data.created_by,
+        businessFollowers: data.businessFollowers,
       };
       updateBusiness.mutate({
         businessName: business.businessName,

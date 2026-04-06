@@ -26,7 +26,8 @@ export default function HomeScreen() {
           {
             _id: "demo-post",
             authorName: "Anchor Demo Business",
-            imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
+            imageUrl:
+              "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
             title: "Fresh Produce Drop",
             body: "Testing the new share feature for Sprint 2.",
           },
@@ -54,11 +55,13 @@ export default function HomeScreen() {
             </TView>
           </TView>
 
-          <TScrollView className="mt-24 gap-8 w-full">
+          <TScrollView className="mt-24 gap-8 pb-4 w-full">
             <View>
               {fallbackPosts.map((item) => (
                 <View key={item._id}>
                   <PostViewFull
+                    width={300}
+                    height={250}
                     post={{
                       authorName: item.authorName,
                       imageUrl: item.imageUrl,

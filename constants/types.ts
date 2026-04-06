@@ -44,6 +44,7 @@ export type Business = {
   businessLocation: string;
   created_by: string;
   businessLogo?: string;
+  businessFollowers: string[];
 };
 
 export type PostViewSmallProps = {
@@ -55,4 +56,6 @@ export type PostViewFullProps = {
   post: Partial<Post>;
   setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
   changeView: boolean;
+  width: number;
+  height: number;
 };

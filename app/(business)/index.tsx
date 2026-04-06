@@ -1,20 +1,38 @@
 import AddPost from "@/components/businessComponents/addPost";
-import { TText } from "@/components/themedComponents/themed-text";
 import { TView } from "@/components/themedComponents/themed-view";
 import useOrgDetails from "@/hooks/use-org-details";
 import { Image } from "expo-image";
 import { FlatList, Text, View } from "react-native";
 import { TButton } from "@/components/themedComponents/themed-button";
 import { useGetOwnBusinessPosts } from "@/convex/queries";
-import { Loader2 } from "lucide-react-native";
 import PostViewSmall from "@/components/posts/postSmall";
 import { useState } from "react";
 import PostViewFull from "@/components/posts/postViewFull";
+import BusinessHeader from "@/components/businessComponents/businessHeader";
+import { useUser } from "@clerk/clerk-expo";
+import Loader from "@/components/loader";
+import ErrorDisplay from "@/components/error-display";
 
 export default function HomeScreen() {
   const { logoUrl, name, id } = useOrgDetails();
+  const { user } = useUser();
   const { data, isLoading, isError, error } = useGetOwnBusinessPosts(id);
   const [changeView, setChangeView] = useState<boolean>(false);
+  const [onClose, setOnClose] = useState<boolean>(false);
+
+  if (isLoading) {
+    return <Loader isLoading={isLoading} />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorDisplay
+        errorMessage={String(error)}
+        setOnClose={setOnClose}
+        onClose={onClose}
+      />
+    );
+  }
 
   return (
     <TView className="flex-1 p-12 ">
@@ -35,67 +53,37 @@ export default function HomeScreen() {
           <AddPost authorName={name} authorId={id} />
         </TView>
       </TView>
+      {data && (
+        <View>
+          {user && <BusinessHeader id={user.id} posts={data.length} />}
 
-      <TView className="flex flex-row gap-4 items-center justify-center ">
-        <View className="flex flex-row  gap-8">
-          <View className="flex flex-col items-center">
-            <TText>14</TText>
-            <TText>Posts</TText>
-          </View>
-          <View className="flex flex-col items-center">
-            <TText>20</TText>
+          <TView className="flex flex-row gap-2 mb-2">
+            <TButton
+              style={{
+                width: 150,
+                height: 35,
+              }}
+              onPress={() => {}}
+              type="secondary"
+            >
+              <View className="flex flex-row items-center">
+                <Text>Edit Profile</Text>
+              </View>
+            </TButton>
+            <TButton
+              style={{
+                width: 150,
+                height: 35,
+              }}
+              onPress={() => {}}
+              type="secondary"
+            >
+              <View className="flex flex-row items-center">
+                <Text>Share Profile</Text>
+              </View>
+            </TButton>
+          </TView>
 
-            <TText>Followers</TText>
-          </View>
-          <View className="flex flex-col items-center">
-            <TText>0</TText>
-            <TText>Events</TText>
-          </View>
-        </View>
-      </TView>
-      <TView className="flex flex-row gap-2 mb-2">
-        <TButton
-          style={{
-            width: 150,
-            height: 35,
-          }}
-          onPress={() => {}}
-          type="secondary"
-        >
-          <View className="flex flex-row items-center">
-            <Text>Edit Profile</Text>
-          </View>
-        </TButton>
-        <TButton
-          style={{
-            width: 150,
-            height: 35,
-          }}
-          onPress={() => {}}
-          type="secondary"
-        >
-          <View className="flex flex-row items-center">
-            <Text>Share Profile</Text>
-          </View>
-        </TButton>
-      </TView>
-      <View>
-        {isLoading && (
-          <View className="flex items-center justify-center">
-            <Loader2 className="animate-spin" />
-          </View>
-        )}
-      </View>
-
-      <View>
-        {isError && (
-          <View className="flex items-center justify-center">
-            <Text>There was an error: {String(error)}</Text>
-          </View>
-        )}
-      </View>
-      <View>
-        {data && (
           <FlatList
             key={`flatlist-${changeView === false ? 3 : 1}`}
             data={data}
@@ -110,6 +98,8 @@ export default function HomeScreen() {
                 ) : (
                   <View>
                     <PostViewFull
+                      width={300}
+                      height={250}
                       post={{
                         authorName: item.authorName,
                         imageUrl: item.imageUrl,
@@ -125,8 +115,8 @@ export default function HomeScreen() {
             )}
             numColumns={changeView === false ? 3 : 1}
           />
-        )}
-      </View>
+        </View>
+      )}
     </TView>
   );
 }

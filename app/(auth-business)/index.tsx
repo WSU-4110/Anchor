@@ -13,6 +13,7 @@ export default function Page() {
     businessId: Crypto.randomUUID(), // This only runs ONCE on initial mount
     businessLocation: "",
     created_by: "",
+    businessFollowers: [],
   }));
   return (
     <TView className="flex-1">

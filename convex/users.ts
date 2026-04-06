@@ -1,6 +1,10 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
-import { UserJSON } from "@clerk/backend";
-import { v, Validator } from "convex/values";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
+import { v } from "convex/values";
 
 export const current = query({
   args: {},
@@ -17,6 +21,7 @@ export const upsertFromClerk = internalMutation({
     const firstName = data.first_name;
     const lastName = data.last_name;
     const imageUrl = data.image_url;
+    const following = data.unsafe_metadata?.following;
 
     // Extract the custom field from unsafe_metadata
     const role = data.unsafe_metadata?.role;
@@ -33,6 +38,7 @@ export const upsertFromClerk = internalMutation({
       lastName,
       imageUrl,
       role, // This will now be "business" or whatever was passed from the frontend
+      following,
     };
     console.log(userProps);
 
@@ -88,5 +94,57 @@ export const getUsersByRole = query({
       .order("desc");
 
     return users;
+  },
+});
+
+export const followBusiness = mutation({
+  args: {
+    userId: v.string(),
+    businessName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", args.userId))
+      .unique();
+    if (user) {
+      const following = user.following;
+      if (following.includes(args.businessName)) {
+        return;
+      }
+      following.push(args.businessName);
+      await ctx.db.patch(user._id, {
+        following: following,
+      });
+    }
+  },
+});
+
+export const unFollowBusiness = mutation({
+  args: {
+    userId: v.string(),
+    businessName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", args.userId))
+      .unique();
+    if (user) {
+      const following = user.following;
+      if (!following.includes(args.businessName)) {
+        return;
+      }
+
+      following.map((account) => {
+        if (account === args.businessName) {
+          following.pop();
+        }
+      });
+
+      await ctx.db.patch(user._id, {
+        following: following,
+      });
+    }
   },
 });
