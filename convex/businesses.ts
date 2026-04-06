@@ -11,7 +11,7 @@ export const createBusinessHandler = async (ctx, args) => {
     businessId: args.businessId,
     businessLocation: args.businessLocation,
     created_by: args.created_by,
-    businessFollowers: v.array(v.string()),
+    businessFollowers: args.businessFollowers,
     
   });
   return id;
@@ -28,7 +28,7 @@ export const updateBusinessHandler = async (ctx, args) => {
       businessName: args.businessName,
       businessLocation: args.businessLocation,
       businessLogo: args.businessLogo,
-      businessFollowers: v.array(v.string()),
+      businessFollowers: args.businessFollowers,
     });
   }
 };
