@@ -52,7 +52,7 @@ describe("Business mutations and queries", () => {
         businessLocation: "Detroit, MI",
         businessId: "business-001",
         created_by: "user-001",
-		business_follwers : [],
+		businessFollowers : [],
       };
 
       const result = await createBusinessHandler(ctx, args);
@@ -62,7 +62,7 @@ describe("Business mutations and queries", () => {
         businessId: "business-001",
         businessLocation: "Detroit, MI",
         created_by: "user-001",
-		business_follwers : [],
+		businessFollowers : [],
       });
       expect(result).toBe(fakeId);
     });
@@ -77,7 +77,7 @@ describe("Business mutations and queries", () => {
           businessLocation: "Detroit, MI",
           businessId: "business-001",
           created_by: "user-001",
-		  business_follwers : [],
+		  businessFollowers : [],
 
         })
         ).rejects.toThrow("DB insert failed");
@@ -91,7 +91,7 @@ describe("Business mutations and queries", () => {
 			businessId: "business-001",
 			created_by: "user-001",
 			businessLogo: "https://example.com/logo.png",
-			business_follwers : [],
+			businessFollowers : [],
 
 		};
 
@@ -106,7 +106,7 @@ describe("Business mutations and queries", () => {
 				businessName: "Test Name",
 				businessLocation: "Detroit, MI",
 				businessLogo: "https://example.com/logo.png",
-				business_follwers : [],
+				businessFollowers : [],
 			});
 		});
 
@@ -127,7 +127,7 @@ describe("Business mutations and queries", () => {
 				_id: "id-1",
 				created_by: "user-001",
 				businessName: "Test Name",
-				business_follwers : [],
+				businessFollowers : [],
 
 			};
 			mocks.mockUnique.mockResolvedValue(fakeBusiness);
