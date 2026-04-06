@@ -10,6 +10,8 @@ export default function PostViewFull({
   post,
   changeView,
   setChangeView,
+  width,
+  height,
 }: PostViewFullProps) {
   const [sharePost, setSharedPost] = useState<boolean>(false);
 
@@ -20,10 +22,10 @@ export default function PostViewFull({
         onPress={() => {
           setChangeView(!changeView);
         }}
-        className="border-2 border-white/15 p-1"
+        className="border-2 border-white/15 p-1 mb-2 w-auto"
         style={{
-          width: 300,
-          height: 200,
+          width: width,
+          height: height,
           overflow: "scroll",
           borderRadius: 18,
         }}

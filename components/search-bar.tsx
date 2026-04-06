@@ -1,17 +1,11 @@
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  Modal,
-  Alert,
-} from "react-native";
+import { View, TextInput, TouchableOpacity, Text } from "react-native";
 import { Search } from "lucide-react-native";
 import { Business } from "@/constants/types";
 import { useState } from "react";
-import { Image } from "expo-image";
-import { TView } from "./themedComponents/themed-view";
-import { TText } from "./themedComponents/themed-text";
+import PublicBusinessAccount from "./businessComponents/publicBusinessAccount";
+import { useGetUser } from "@/convex/queries";
+import Loader from "./loader";
+import ErrorDisplay from "./error-display";
 
 type SearchBarProps = {
   searchQuery: string;
@@ -26,6 +20,23 @@ export default function SearchBar({
 }: SearchBarProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [businessName, setBusinessName] = useState<string>("");
+  const { data: user, isLoading, isError, error } = useGetUser();
+  const [onClose, setOnClose] = useState<boolean>(false);
+
+  if (isLoading) {
+    return <Loader isLoading={isLoading} />;
+  }
+
+  if (isError) {
+    return (
+      <ErrorDisplay
+        errorMessage={String(error)}
+        setOnClose={setOnClose}
+        onClose={onClose}
+      />
+    );
+  }
+
   return (
     <View>
       <View
@@ -87,57 +98,15 @@ export default function SearchBar({
             key={item.businessId}
           >
             <Text>{item.businessName || "Waiting for Input..."}</Text>
-            {open && (
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={open}
-                onRequestClose={() => {
-                  Alert.alert("Modal has been closed.");
-                  setOpen(!open);
-                }}
-              >
-                <View
-                  onTouchEnd={() => {
-                    setOpen(!open);
-                  }}
-                  className="flex-1 pt-24 px-8 items-center border-1 border-black rounded-3xl w-full"
-                >
-                  <View className="p-5 rounded-3xl bg-black/10 border border-white/15 bg-white w-[300px]">
-                    <View className="flex-col items-center justify-center mb-2  gap-2">
-                      <View className="w-24 h-24 rounded-full border-1 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4 ">
-                        <Image
-                          source={item.businessLogo || ""}
-                          className="object-cover rounded-full"
-                          style={{
-                            width: 70,
-                            height: 70,
-                            borderRadius: 40,
-                          }}
-                        />
-                      </View>
-                      <Text className="text-2xl font-bold">{businessName}</Text>
-                    </View>
-                    <View className="flex flex-row gap-4 items-center justify-center ">
-                      <View className="flex flex-row  gap-8">
-                        <View className="flex flex-col items-center">
-                          <TText>1</TText>
-                          <TText>Posts</TText>
-                        </View>
-                        <View className="flex flex-col items-center">
-                          <TText>20</TText>
-
-                          <TText>Followers</TText>
-                        </View>
-                        <View className="flex flex-col items-center">
-                          <TText>0</TText>
-                          <TText>Events</TText>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
+            {user && open && (
+              <PublicBusinessAccount
+                userId={user.clerkUserId}
+                userFollowing={user.following}
+                userView={true}
+                open={open}
+                setOpen={setOpen}
+                business={item}
+              />
             )}
           </TouchableOpacity>
         ))}

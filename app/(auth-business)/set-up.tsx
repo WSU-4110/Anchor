@@ -38,6 +38,7 @@ export default function SetUp({ business, setBusiness, userId }: SetUpProps) {
         businessLocation: business.businessLocation,
         businessId: business.businessId,
         created_by: userId,
+        businessFollowers: business.businessFollowers,
       });
       router.replace("/(business)");
     } catch (err) {

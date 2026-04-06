@@ -40,6 +40,7 @@ export default function Page() {
         password,
         unsafeMetadata: {
           role: type,
+          following: [],
         },
       });
 

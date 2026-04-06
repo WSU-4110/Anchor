@@ -22,3 +22,17 @@ export function useGetAllBusinesses() {
   );
   return { data, isLoading, isError, error };
 }
+
+export function useGetBusinessPosts(businessName: string) {
+  const { data, isLoading, isError, error } = useQuery(
+    convexQuery(api.posts.queryBusinessPosts, { businessName: businessName }),
+  );
+  return { data, isLoading, isError, error };
+}
+
+export function useGetUser() {
+  const { data, isLoading, isError, error } = useQuery(
+    convexQuery(api.users.current),
+  );
+  return { data, isLoading, isError, error };
+}
