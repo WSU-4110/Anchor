@@ -1,5 +1,5 @@
 import MapView, { Marker } from "react-native-maps";
-import { View } from "react-native";
+import { View, Image, StyleSheet } from "react-native";
 
 const demoBusinesses = [
   {
@@ -42,9 +42,36 @@ export default function MapScreen() {
               longitude: business.longitude,
             }}
             title={business.name}
-          />
+          >
+            <View style={styles.markerContainer}>
+              <Image 
+                source={require("../../assets/images/logo.png")}
+                style={styles.markerImage}
+              />
+            </View>
+          </Marker>
+          
         ))}
       </MapView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  markerContainer: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#4a7c59",
+    padding: 6,
+  },
+  markerImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
+  },
+});
