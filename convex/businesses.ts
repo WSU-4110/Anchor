@@ -1,6 +1,72 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+export const createBusinessHandler = async (ctx: any, args: any) => {
+  const existingBusiness = await ctx.db
+    .query("businesses")
+    .withIndex("businessId")
+    .filter()
+    .unique();
+
+  if (existingBusiness) {
+    return existingBusiness._id;
+  }
+
+  return await ctx.db.insert("businesses", {
+    businessName: args.businessName,
+    businessId: args.businessId,
+    businessLocation: args.businessLocation,
+    created_by: args.created_by,
+    businessFollowers: args.businessFollowers ?? [],
+    ...(args.businessLogo !== undefined
+      ? { businessLogo: args.businessLogo }
+      : {}),
+  });
+};
+
+export const updateBusinessHandler = async (ctx: any, args: any) => {
+  const business = await ctx.db
+    .query("businesses")
+    .withIndex("businessId")
+    .filter()
+    .unique();
+
+  if (!business) {
+    return undefined;
+  }
+
+  await ctx.db.patch(business._id, {
+    ...(args.businessName !== undefined
+      ? { businessName: args.businessName }
+      : {}),
+    ...(args.businessLocation !== undefined
+      ? { businessLocation: args.businessLocation }
+      : {}),
+    ...(args.businessLogo !== undefined
+      ? { businessLogo: args.businessLogo }
+      : {}),
+    ...(args.businessFollowers !== undefined
+      ? { businessFollowers: args.businessFollowers }
+      : {}),
+  });
+
+  return business._id;
+};
+
+export const queryBusinessWithIdHandler = async (ctx: any, args: any) => {
+  const business = await ctx.db
+    .query("businesses")
+    .withIndex("created_by")
+    .filter()
+    .unique();
+
+  return business ?? undefined;
+};
+
+export const queryBusinessesHandler = async (ctx: any) => {
+  return await ctx.db.query("businesses").collect();
+};
+
 export const queryBusinessWithId = query({
   args: {
     userId: v.string(),
@@ -74,16 +140,16 @@ export const updateBusiness = mutation({
     const patch: {
       businessName?: string;
       businessLocation?: string;
-      created_by?: string;
       businessLogo?: string;
       businessFollowers?: string[];
     } = {};
 
     if (args.businessName !== undefined) patch.businessName = args.businessName;
-    if (args.businessLocation !== undefined) patch.businessLocation = args.businessLocation;
-    if (args.created_by !== undefined) patch.created_by = args.created_by;
+    if (args.businessLocation !== undefined)
+      patch.businessLocation = args.businessLocation;
     if (args.businessLogo !== undefined) patch.businessLogo = args.businessLogo;
-    if (args.businessFollowers !== undefined) patch.businessFollowers = args.businessFollowers;
+    if (args.businessFollowers !== undefined)
+      patch.businessFollowers = args.businessFollowers;
 
     await ctx.db.patch(business._id, patch);
     return business._id;
