@@ -1,21 +1,37 @@
 import { Image } from "expo-image";
 import { TView } from "../themedComponents/themed-view";
 import { Text, TouchableOpacity, View } from "react-native";
-import { OrganizationResource, UserResource } from "@clerk/types";
+import { UserResource } from "@clerk/types";
 import * as ImagePicker from "expo-image-picker";
-import { useState } from "react";
 import { useUpdateBusiness } from "@/convex/mutations";
 import { useGetBusiness } from "@/convex/queries";
 import { Loader2 } from "lucide-react-native";
+
 type UserImageProps = {
   user: UserResource;
 };
+
 export default function UserImageSelector({ user }: UserImageProps) {
   const { data, isLoading, isError, error } = useGetBusiness(user.id);
   const updateBusiness = useUpdateBusiness();
-  const [org] = useState<OrganizationResource>(
-    user.organizationMemberships[0].organization,
-  );
+
+  const org = user.organizationMemberships?.[0]?.organization;
+
+  if (!org) {
+    return (
+      <TView className="w-24 h-24 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4">
+        <Image
+          source={user.imageUrl}
+          className="object-cover rounded-full"
+          style={{
+            width: 70,
+            height: 70,
+            borderRadius: 40,
+          }}
+        />
+      </TView>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -35,7 +51,7 @@ export default function UserImageSelector({ user }: UserImageProps) {
 
   const handleImageSelector = async () => {
     try {
-      let result = await ImagePicker.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsEditing: true,
         aspect: [4, 3],
@@ -43,15 +59,16 @@ export default function UserImageSelector({ user }: UserImageProps) {
         base64: true,
       });
 
-      if (!result.canceled && result.assets[0].base64) {
+      if (!result.canceled && result.assets[0]?.base64) {
         const base64 = result.assets[0].base64;
-        const mimeType = result.assets[0].mimeType;
+        const mimeType = result.assets[0].mimeType ?? "image/jpeg";
         const image = `data:${mimeType};base64,${base64}`;
 
         await org.setLogo({
-          file: image as any,
+          file: image as never,
         });
         await org.reload();
+
         if (data) {
           updateBusiness.mutate({
             businessName: data.businessName,
@@ -66,11 +83,12 @@ export default function UserImageSelector({ user }: UserImageProps) {
       console.log("There was an error uploading new image", err);
     }
   };
+
   return (
-    <TView className="w-24 h-24 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4 ">
+    <TView className="w-24 h-24 rounded-full border-4 border-teal-500/30 items-center justify-center bg-teal-800/20 mb-4">
       <TouchableOpacity onPress={handleImageSelector}>
         <Image
-          source={org.imageUrl}
+          source={org.imageUrl || user.imageUrl}
           className="object-cover rounded-full"
           style={{
             width: 70,

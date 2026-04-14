@@ -28,7 +28,9 @@ export type PersonalAccountFormProps = {
   user: UserResource;
 };
 
+// Post record stored in Convex. `_id` is included when retrieved through queries.
 export type Post = {
+  _id?: string;
   authorName: string;
   authorId: string;
   title: string;
@@ -36,6 +38,8 @@ export type Post = {
   createdAt: string;
   updatedAt: string;
   imageUrl: string;
+  // Array of user IDs who liked this post. Provided by Convex.
+  likes?: string[];
 };
 
 export type Business = {
@@ -47,12 +51,22 @@ export type Business = {
   businessFollowers: string[];
 };
 
+/**
+ * Props for the small post view used in grids on the business page.
+ *
+ * - `imageUrl` is the URL of the post image.
+ * - `likesCount` is the number of likes on this post; used to display a count overlay.
+ * - `setChangeView` toggles between the small and full post view.
+ * - `changeView` indicates whether the modal should display the full view.
+ */
 export type PostViewSmallProps = {
   imageUrl: string;
+  likesCount?: number;
   setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
   changeView: boolean;
 };
 export type PostViewFullProps = {
+  // Post object including optional likes and _id. When retrieved from queries, `post._id` and `post.likes` will be defined.
   post: Partial<Post>;
   setChangeView: React.Dispatch<React.SetStateAction<boolean>>;
   changeView: boolean;

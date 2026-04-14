@@ -42,17 +42,18 @@ export default function AccountFormContainer({
         return (
           <View>
             {data && (
-              <EditBusinessAccount
-                user={user}
-                data={{
-                  businessName: data.businessName,
-                  businessLocation: data.businessLocation,
-                  businessLogo: data.businessLogo,
-                  created_by: data.created_by,
-                  businessId: data.businessId,
-                }}
-              />
-            )}
+  <EditBusinessAccount
+    user={user}
+    data={{
+      businessName: data.businessName,
+      businessLocation: data.businessLocation,
+      businessLogo: data.businessLogo,
+      created_by: data.created_by,
+      businessId: data.businessId,
+      businessFollowers: data.businessFollowers ?? [], 
+    }}
+  />
+)}
           </View>
         );
       }

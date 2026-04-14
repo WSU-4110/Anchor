@@ -3,7 +3,7 @@ import { TView } from "./themedComponents/themed-view";
 import { TTextInput } from "./themedComponents/themed-textInput";
 import { TButton } from "./themedComponents/themed-button";
 import { TText } from "./themedComponents/themed-text";
-import { Link } from "@react-navigation/native";
+import { Link } from "expo-router";
 
 export type SignUpFormContainerProps = {
   type: string;
@@ -11,6 +11,7 @@ export type SignUpFormContainerProps = {
   account: Account;
   onSignUpPress: () => Promise<void>;
 };
+
 export default function SignUpFormContainer({
   type,
   account,
@@ -32,6 +33,7 @@ export default function SignUpFormContainer({
           setAccount({ ...account, emailAddress: email })
         }
       />
+
       <TTextInput
         type="default"
         className="w-full"
@@ -40,7 +42,7 @@ export default function SignUpFormContainer({
         placeholderTextColor="#666666"
         secureTextEntry={true}
         onChangeText={(password) =>
-          setAccount({ ...account, password: password })
+          setAccount({ ...account, password })
         }
       />
 
@@ -53,9 +55,10 @@ export default function SignUpFormContainer({
           <TText type="secondary">Continue</TText>
         </TButton>
       )}
+
       <TView className="flex flex-row items-center gap-2">
         <TText type="default">Have an account?</TText>
-        <Link href="/sign-in">
+        <Link href="./sign-in">
           <TText type="link">Sign in</TText>
         </Link>
       </TView>

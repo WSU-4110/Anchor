@@ -1,10 +1,17 @@
 import { PostViewFullProps } from "@/constants/types";
 import { Image } from "expo-image";
-import { Building2, Heart, Share2 } from "lucide-react-native";
-import { TouchableOpacity, View } from "react-native";
+import { Bookmark, Building2, Heart, Share2 } from "lucide-react-native";
+import { TouchableOpacity, View, Text } from "react-native";
 import { TText } from "../themedComponents/themed-text";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { handleShare } from "@/lib/helpers";
+import {
+  useSavePost,
+  useToggleLikePost,
+  useUnsavePost,
+} from "@/convex/mutations";
+import { useUser } from "@clerk/clerk-expo";
+import { useIsSavedPost } from "@/convex/queries";
 
 export default function PostViewFull({
   post,
@@ -13,7 +20,71 @@ export default function PostViewFull({
   width,
   height,
 }: PostViewFullProps) {
-  const [sharePost, setSharedPost] = useState<boolean>(false);
+  const { user } = useUser();
+
+  const toggleLike = useToggleLikePost();
+  const savePost = useSavePost();
+  const unsavePost = useUnsavePost();
+
+  const isRealPostId = useMemo(() => {
+    return !!post._id && typeof post._id !== "string"
+      ? true
+      : typeof post._id === "string" && !post._id.startsWith("demo-");
+  }, [post._id]);
+
+  const [likeCount, setLikeCount] = useState<number>(post.likes?.length ?? 0);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+
+  const { data: isSaved } = useIsSavedPost(
+    isRealPostId ? post._id : undefined,
+    user?.id,
+  );
+
+  useEffect(() => {
+    setLikeCount(post.likes?.length ?? 0);
+
+    if (user && post.likes) {
+      setIsLiked(post.likes.includes(user.id));
+    } else {
+      setIsLiked(false);
+    }
+  }, [user, post.likes]);
+
+  const handleToggleLike = async () => {
+    if (!user || !post._id || !isRealPostId) return;
+
+    try {
+      const newLikeCount = await toggleLike.mutateAsync({
+        id: post._id as never,
+        userId: user.id,
+      });
+
+      setIsLiked((prev) => !prev);
+      setLikeCount(newLikeCount);
+    } catch (err) {
+      console.error("Error toggling like", err);
+    }
+  };
+
+  const handleToggleSave = async () => {
+    if (!user || !post._id || !isRealPostId) return;
+
+    try {
+      if (isSaved) {
+        await unsavePost.mutateAsync({
+          postId: post._id as never,
+          userKey: user.id,
+        });
+      } else {
+        await savePost.mutateAsync({
+          postId: post._id as never,
+          userKey: user.id,
+        });
+      }
+    } catch (err) {
+      console.error("Error saving post", err);
+    }
+  };
 
   return (
     <View>
@@ -24,8 +95,8 @@ export default function PostViewFull({
         }}
         className="border-2 border-white/15 p-1 mb-2 w-auto"
         style={{
-          width: width,
-          height: height,
+          width,
+          height,
           overflow: "scroll",
           borderRadius: 18,
         }}
@@ -48,22 +119,28 @@ export default function PostViewFull({
             <TText className="text-md text-white">{post.authorName}</TText>
           </View>
 
-          <View testID="container" className="flex flex-row items-center gap-4">
+          <View className="flex flex-row items-center gap-4">
             <TouchableOpacity
-              testID="share-post-container"
-              onPress={() => {
-                setSharedPost(!sharePost);
-              }}
-              className="z-50"
+              testID="like-post"
+              onPress={handleToggleLike}
+              className="flex flex-row items-center gap-1"
+              disabled={!isRealPostId}
             >
-              <View testID="heart-icon">
-                <Heart color="#aac7b6" fill={sharePost ? "red" : ""} />
-              </View>
+              <Heart color="#aac7b6" fill={isLiked ? "red" : ""} />
+              <Text style={{ color: "#aac7b6" }}>{likeCount}</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={handleToggleSave}
+              disabled={!isRealPostId}
+            >
+              <Bookmark color="#aac7b6" fill={isSaved ? "#aac7b6" : ""} />
+            </TouchableOpacity>
+
             <TouchableOpacity
               testID="share-post"
               onPress={() => {
-                handleShare(post.title, post.body);
+                handleShare(post.title ?? "", post.body ?? "");
               }}
             >
               <Share2 color="#aac7b6" />

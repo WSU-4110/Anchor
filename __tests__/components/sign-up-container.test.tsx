@@ -1,8 +1,7 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import SignUpFormContainer from "@/components/sign-up-container";
 
-// mock themed components
 jest.mock("@/components/themedComponents/themed-view", () => ({
   TView: ({ children, ...props }: any) => {
     const { View } = require("react-native");
@@ -31,10 +30,14 @@ jest.mock("@/components/themedComponents/themed-text", () => ({
   },
 }));
 
-jest.mock("@react-navigation/native", () => ({
+jest.mock("expo-router", () => ({
   Link: ({ children, href }: any) => {
     const { TouchableOpacity } = require("react-native");
-    return <TouchableOpacity accessibilityLabel={href}>{children}</TouchableOpacity>;
+    return (
+      <TouchableOpacity accessibilityLabel={href}>
+        {children}
+      </TouchableOpacity>
+    );
   },
 }));
 
@@ -54,17 +57,19 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-// tests
 describe("SignUpFormContainer", () => {
-	
-	describe("personal type", () => {
-		it("renders the personal email placeholder", () => {
-      const { getByPlaceholderText } = render(<SignUpFormContainer {...baseProps} />);
+  describe("personal type", () => {
+    it("renders the personal email placeholder", () => {
+      const { getByPlaceholderText } = render(
+        <SignUpFormContainer {...baseProps} />,
+      );
       expect(getByPlaceholderText("Enter Email")).toBeTruthy();
     });
 
     it("renders the password input", () => {
-      const { getByPlaceholderText } = render(<SignUpFormContainer {...baseProps} />);
+      const { getByPlaceholderText } = render(
+        <SignUpFormContainer {...baseProps} />,
+      );
       expect(getByPlaceholderText("Enter password")).toBeTruthy();
     });
 
@@ -73,21 +78,24 @@ describe("SignUpFormContainer", () => {
       expect(getByText("Register")).toBeTruthy();
     });
 
-		it("calls onSignUpPress when Register is pressed", () => {
+    it("calls onSignUpPress when Register is pressed", () => {
       const { getByText } = render(<SignUpFormContainer {...baseProps} />);
       fireEvent.press(getByText("Register"));
       expect(baseProps.onSignUpPress).toHaveBeenCalledTimes(1);
     });
-	});
+  });
 
-	describe("input interactions", () => {
-		it("calls setAccount with updated email on email change", () => {
+  describe("input interactions", () => {
+    it("calls setAccount with updated email on email change", () => {
       const setAccount = jest.fn();
       const { getByPlaceholderText } = render(
-        <SignUpFormContainer {...baseProps} setAccount={setAccount} />
+        <SignUpFormContainer {...baseProps} setAccount={setAccount} />,
       );
 
-      fireEvent.changeText(getByPlaceholderText("Enter Email"), "test@example.com");
+      fireEvent.changeText(
+        getByPlaceholderText("Enter Email"),
+        "test@example.com",
+      );
 
       expect(setAccount).toHaveBeenCalledWith({
         ...baseAccount,
@@ -98,10 +106,13 @@ describe("SignUpFormContainer", () => {
     it("calls setAccount with updated password on password change", () => {
       const setAccount = jest.fn();
       const { getByPlaceholderText } = render(
-        <SignUpFormContainer {...baseProps} setAccount={setAccount} />
+        <SignUpFormContainer {...baseProps} setAccount={setAccount} />,
       );
 
-      fireEvent.changeText(getByPlaceholderText("Enter password"), "secret123");
+      fireEvent.changeText(
+        getByPlaceholderText("Enter password"),
+        "secret123",
+      );
 
       expect(setAccount).toHaveBeenCalledWith({
         ...baseAccount,
@@ -110,14 +121,20 @@ describe("SignUpFormContainer", () => {
     });
 
     it("reflects current account values in inputs", () => {
-      const filledAccount = { emailAddress: "hello@test.com", password: "pass99" };
+      const filledAccount = {
+        emailAddress: "hello@test.com",
+        password: "pass99",
+      };
       const { getByPlaceholderText } = render(
-        <SignUpFormContainer {...baseProps} account={filledAccount} />
+        <SignUpFormContainer {...baseProps} account={filledAccount} />,
       );
 
-      expect(getByPlaceholderText("Enter Email").props.value).toBe("hello@test.com");
-      expect(getByPlaceholderText("Enter password").props.value).toBe("pass99");
+      expect(getByPlaceholderText("Enter Email").props.value).toBe(
+        "hello@test.com",
+      );
+      expect(getByPlaceholderText("Enter password").props.value).toBe(
+        "pass99",
+      );
     });
-	});
-	
+  });
 });
