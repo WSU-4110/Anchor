@@ -27,7 +27,19 @@ export default function SearchTab({ data }: SearchBarProps) {
       <SearchBar
         searchQuery={searchQuery}
         onChangeText={setSearchQuery}
-        data={searchQuery.length > 0 ? filteredData : data}
+        data={
+          searchQuery.length > 0
+            ? filteredData
+            : [
+                {
+                  businessName: "",
+                  businessId: "",
+                  businessLocation: "",
+                  created_by: "",
+                  businessFollowers: [],
+                },
+              ]
+        }
       />
     </TView>
   );

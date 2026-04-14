@@ -19,7 +19,9 @@ export default function SearchBar({
   data,
 }: SearchBarProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
+    null,
+  );
   const { data: user, isLoading, isError, error } = useGetUser();
   const [onClose, setOnClose] = useState<boolean>(false);
 
@@ -95,7 +97,7 @@ export default function SearchBar({
             className="w-full bg-[#74b890] gap-2 rounded-3xl p-4"
             key={item.businessId}
           >
-            <Text>{item.businessName}</Text>
+            <Text>{item.businessName || "Waiting for Input..."}</Text>
           </TouchableOpacity>
         ))}
       </View>

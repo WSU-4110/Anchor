@@ -2,13 +2,7 @@ import PublicBusinessAccount from "@/components/businessComponents/publicBusines
 import { useGetAllBusinesses, useGetUser } from "@/convex/queries";
 import { Business } from "@/constants/types";
 import MapView, { Marker } from "react-native-maps";
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { useMemo, useState } from "react";
 
 type FilterType = "all" | "following" | "not_following";
@@ -18,7 +12,9 @@ export default function MapScreen() {
   const { data: currentUser } = useGetUser();
 
   const [open, setOpen] = useState(false);
-  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(
+    null,
+  );
   const [filterOpen, setFilterOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
 
