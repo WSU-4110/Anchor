@@ -15,8 +15,10 @@ export default function PostViewSmall({
       }}
       className="border-2 border-white/15 p-1"
       style={{
-        width: 110,
-        height: 125,
+        //width: 110,
+        //height: 125,
+        width: 88,
+        height: 100,
         overflow: "hidden",
         borderRadius: 18,
       }}

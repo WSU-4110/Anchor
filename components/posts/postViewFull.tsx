@@ -1,6 +1,6 @@
 import { PostViewFullProps } from "@/constants/types";
 import { Image } from "expo-image";
-import { Building2, Heart, Share2 } from "lucide-react-native";
+import { Building2, Heart, Share2, Bookmark } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
 import { TText } from "../themedComponents/themed-text";
 import { useState } from "react";
@@ -14,6 +14,7 @@ export default function PostViewFull({
   height,
 }: PostViewFullProps) {
   const [sharePost, setSharedPost] = useState<boolean>(false);
+  const [save, setSave] = useState<boolean>(false);
 
   return (
     <View>
@@ -50,6 +51,17 @@ export default function PostViewFull({
 
           <View testID="container" className="flex flex-row items-center gap-4">
             <TouchableOpacity
+              onPress={() => {
+                setSave(!save);
+              }}
+              className="z-50"
+            >
+              <View>
+                <Bookmark color="#aac7b6" fill={save ? "green" : ""} />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               testID="share-post-container"
               onPress={() => {
                 setSharedPost(!sharePost);
@@ -60,6 +72,7 @@ export default function PostViewFull({
                 <Heart color="#aac7b6" fill={sharePost ? "red" : ""} />
               </View>
             </TouchableOpacity>
+            
             <TouchableOpacity
               testID="share-post"
               onPress={() => {
