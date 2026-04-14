@@ -1,24 +1,22 @@
 import { useUser } from "@clerk/clerk-expo";
 
-export type OrgDetails = {
-  name: string;
-  logoUrl: string;
-  id: string;
-};
-export default function useOrgDetails(): OrgDetails {
+export default function useOrgDetails() {
   const { user, isLoaded } = useUser();
-  //1. One user can only be associated with one organization for now.
-  if (!isLoaded) {
-    console.warn("user not loaded from clerk");
+
+  if (!isLoaded || !user) {
+    return {
+      name: "",
+      logoUrl: "",
+      id: "",
+    };
   }
-  const organization = user?.organizationMemberships[0].organization;
-  const name = organization?.name || "";
-  const logoUrl = organization?.imageUrl || "";
-  const id = organization?.id || "";
+
+  const orgMembership = user.organizationMemberships?.[0];
+  const organization = orgMembership?.organization;
 
   return {
-    name,
-    id,
-    logoUrl,
+    name: organization?.name ?? "",
+    logoUrl: organization?.imageUrl ?? "",
+    id: organization?.id ?? "",
   };
 }

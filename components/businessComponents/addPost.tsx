@@ -1,242 +1,195 @@
 import { useState } from "react";
-import { TView } from "../themedComponents/themed-view";
 import {
-  Ban,
-  ImageIcon,
-  Pencil,
-  PlusIcon,
-  UploadIcon,
-} from "lucide-react-native";
-import {
-  Alert,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
+  Pressable,
+  ScrollView,
   Text,
-  TouchableOpacity,
-  useColorScheme,
+  TextInput,
+  TouchableWithoutFeedback,
+  Keyboard,
   View,
 } from "react-native";
-import { TText } from "../themedComponents/themed-text";
-import { TTextInput } from "../themedComponents/themed-textInput";
+import { Plus, X } from "lucide-react-native";
 import { TButton } from "../themedComponents/themed-button";
-import { Post } from "@/constants/types";
-import * as ImagePicker from "expo-image-picker";
+import { TText } from "../themedComponents/themed-text";
+import { TView } from "../themedComponents/themed-view";
 import { useCreatePost } from "@/convex/mutations";
 
-type PostProps = {
+type AddPostProps = {
   authorName: string;
   authorId: string;
 };
-export default function AddPost({ authorName, authorId }: PostProps) {
-  const [open, setOpen] = useState<boolean>(false);
-  const colorScheme = useColorScheme();
+
+export default function AddPost({ authorName, authorId }: AddPostProps) {
   const createPost = useCreatePost();
 
-  const [post, setPost] = useState<Post>({
-    authorId: authorId,
-    authorName: authorName,
-    createdAt: "",
-    updatedAt: "",
-    title: "",
-    body: "",
-    imageUrl: "",
-  });
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageUpload = async () => {
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ["images"],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-        base64: true,
-      });
+  const resetForm = () => {
+    setTitle("");
+    setBody("");
+    setImageUrl("");
+    setError(null);
+    setIsSubmitting(false);
+  };
 
-      if (!result.canceled) {
-        setPost({ ...post, imageUrl: result.assets[0].uri });
-      }
-    } catch (err) {
-      console.log("There was an error uploading new image", err);
-    }
+  const handleClose = () => {
+    setOpen(false);
+    resetForm();
   };
-  const clearFields = () => {
-    setPost({
-      authorId: authorId,
-      authorName: authorName,
-      createdAt: "",
-      updatedAt: "",
-      title: "",
-      body: "",
-      imageUrl: "",
-    });
-  };
-  const handleOnCreate = () => {
-    if (!post.imageUrl) {
-      console.warn("No Image set for post");
+
+  const handleCreatePost = async () => {
+    if (isSubmitting) return;
+
+    if (!title.trim()) {
+      setError("Post title is required.");
+      return;
     }
+
+    if (!body.trim()) {
+      setError("Post body is required.");
+      return;
+    }
+
+    setError(null);
+    setIsSubmitting(true);
 
     try {
-      createPost.mutate({
-        imageUrl: post.imageUrl,
-        title: post.title,
-        authorName: post.authorName,
-        authorId: post.authorId,
-        body: post.body,
+      await createPost.mutateAsync({
+        title: title.trim(),
+        body: body.trim(),
+        imageUrl: imageUrl.trim(),
+        authorName,
+        authorId,
       });
-      setOpen(!open);
-      clearFields();
-    } catch (err) {
-      console.log(`There was an error creating a post: ${err}`);
+
+      handleClose();
+    } catch (err: any) {
+      const message =
+        err?.errors?.[0]?.longMessage ||
+        err?.errors?.[0]?.message ||
+        err?.message ||
+        "There was an error creating the post.";
+
+      setError(message);
+      setIsSubmitting(false);
     }
   };
+
   return (
-    <TView className="flex">
-      <View className="flex flex-row items-center justify-center gap-4 ">
-        <PlusIcon
-          onPress={() => {
-            setOpen(!open);
-          }}
-          color={colorScheme === "dark" ? "#aac7b6" : "#061f20"}
-        />
-      </View>
-      {open && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={open}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-            setOpen(!open);
-          }}
-        >
-          <View className="flex-1 pt-24 px-8  items-center justify-center border-1 border-black rounded-3xl w-auto">
-            <View className="p-5 rounded-3xl bg-black/10 border border-white/15 bg-white">
-              <View className="flex flex-row gap-2 items-center mb-4">
-                <Pencil size={18} color={"black"} />
-                <TText
-                  type="secondary"
-                  className="font-bold uppercase tracking-widest text-xs"
-                >
-                  Create New Post
-                </TText>
-              </View>
+    <>
+      <Pressable onPress={() => setOpen(true)}>
+        <TView className="flex-row items-center gap-2 px-4 py-2 rounded-2xl bg-teal-700/20 border border-teal-500/30">
+          <Plus size={16} color="white" />
+          <TText>Create Post</TText>
+        </TView>
+      </Pressable>
 
-              <View>
-                <TText
-                  type="secondary"
-                  style={{
-                    fontSize: 12,
-                  }}
-                >
-                  Post Title
-                </TText>
-                <View className="flex-row items-center justify-center mb-6 gap-2">
-                  <TTextInput
-                    value={post.title}
-                    onChangeText={(e) => {
-                      setPost({ ...post, title: e });
-                    }}
-                    className="w-full"
-                    type={"default"}
-                    autoCapitalize="none"
-                    required
-                    placeholder="Fun Event"
-                    placeholderTextColor="#666666"
-                  />
+      <Modal visible={open} transparent animationType="slide">
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View className="flex-1 bg-black/70 justify-end">
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : undefined}
+              keyboardVerticalOffset={Platform.OS === "ios" ? 24 : 0}
+            >
+              <View className="max-h-[85%] rounded-t-3xl bg-[#062b2d] px-5 pt-5 pb-8">
+                <View className="flex-row items-center justify-between mb-4">
+                  <TText type="title">Create Post</TText>
+                  <Pressable onPress={handleClose}>
+                    <X size={22} color="white" />
+                  </Pressable>
                 </View>
-              </View>
 
-              <View>
-                <TText
-                  type="secondary"
-                  style={{
-                    fontSize: 12,
-                  }}
+                <ScrollView
+                  keyboardShouldPersistTaps="handled"
+                  contentContainerStyle={{ paddingBottom: 24 }}
+                  showsVerticalScrollIndicator={false}
                 >
-                  Post Description
-                </TText>
-                <View>
-                  <TTextInput
-                    value={post.body}
+                  <TText className="mb-2">Title</TText>
+                  <TextInput
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder="Post title"
+                    placeholderTextColor="#9ca3af"
+                    style={{
+                      color: "white",
+                      borderWidth: 1,
+                      borderColor: "#4b5563",
+                      borderRadius: 12,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      marginBottom: 16,
+                    }}
+                  />
+
+                  <TText className="mb-2">Body</TText>
+                  <TextInput
+                    value={body}
+                    onChangeText={setBody}
+                    placeholder="Write your post"
+                    placeholderTextColor="#9ca3af"
                     multiline
-                    onChangeText={(e) => {
-                      setPost({ ...post, body: e });
+                    textAlignVertical="top"
+                    style={{
+                      color: "white",
+                      borderWidth: 1,
+                      borderColor: "#4b5563",
+                      borderRadius: 12,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      minHeight: 140,
+                      marginBottom: 16,
                     }}
-                    className="w-auto"
-                    type={"default"}
-                    autoCapitalize="none"
-                    required
-                    placeholder="Here is the description for a really cool event"
-                    placeholderTextColor="#666666"
                   />
-                </View>
-              </View>
-              <View className="mt-4">
-                <TText
-                  type="secondary"
-                  style={{
-                    fontSize: 12,
-                  }}
-                >
-                  Post Image
-                </TText>
-                <TButton
-                  type="outline"
-                  style={{
-                    width: 120,
-                    backgroundColor:
-                      colorScheme === "dark" ? "#aac7b6" : "#061f20",
-                  }}
-                  onPress={handleImageUpload}
-                >
-                  <View className="flex flex-row items-center gap-2">
-                    <ImageIcon
-                      size={20}
-                      color={colorScheme === "dark" ? "#666666" : "#666666"}
-                    />
-                    <Text className="text-sm text-[#666666]">Add Image</Text>
-                  </View>
-                </TButton>
-              </View>
 
-              <View className="flex flex-row items-center justify-center gap-2">
-                <TouchableOpacity
-                  onPress={() => {
-                    setOpen(!open);
-                  }}
-                  className="mt-6 p-3 h-12 justify-center  w-1/2 flex items-center border p-2 border-black rounded-3xl "
-                >
-                  <View className="flex flex-row gap-2">
-                    <Ban />
-                    <TText type="secondary">Cancel</TText>
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleOnCreate}
-                  style={{
-                    backgroundColor:
-                      colorScheme === "dark" ? "#aac7b6" : "#061f20",
-                  }}
-                  className="mt-6 w-1/2 h-12 justify-center flex items-center border p-3 border-black rounded-3xl "
-                >
-                  <View className="flex flex-row gap-2">
-                    <UploadIcon
-                      color={colorScheme === "dark" ? "#061f20" : "#aac7b6"}
-                    />
-                    <TText
+                  <TText className="mb-2">Image URL</TText>
+                  <TextInput
+                    value={imageUrl}
+                    onChangeText={setImageUrl}
+                    placeholder="Optional image URL"
+                    placeholderTextColor="#9ca3af"
+                    autoCapitalize="none"
+                    style={{
+                      color: "white",
+                      borderWidth: 1,
+                      borderColor: "#4b5563",
+                      borderRadius: 12,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
+                      marginBottom: 16,
+                    }}
+                  />
+
+                  {error && (
+                    <Text
                       style={{
-                        color: colorScheme === "dark" ? "#061f20" : "#aac7b6",
+                        color: "red",
+                        marginBottom: 16,
+                        textAlign: "center",
                       }}
-                      type="secondary"
                     >
-                      Upload
+                      {error}
+                    </Text>
+                  )}
+
+                  <TButton type="primary" onPress={handleCreatePost}>
+                    <TText type="secondary">
+                      {isSubmitting ? "Posting..." : "Post"}
                     </TText>
-                  </View>
-                </TouchableOpacity>
+                  </TButton>
+                </ScrollView>
               </View>
-            </View>
+            </KeyboardAvoidingView>
           </View>
-        </Modal>
-      )}
-    </TView>
+        </TouchableWithoutFeedback>
+      </Modal>
+    </>
   );
 }

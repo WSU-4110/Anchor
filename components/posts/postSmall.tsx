@@ -1,9 +1,11 @@
 import { PostViewSmallProps } from "@/constants/types";
 import { Image } from "expo-image";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View, Text } from "react-native";
+import { Heart } from "lucide-react-native";
 
 export default function PostViewSmall({
   imageUrl,
+  likesCount = 0,
   setChangeView,
   changeView,
 }: PostViewSmallProps) {
@@ -33,6 +35,30 @@ export default function PostViewSmall({
         }}
         source={imageUrl}
       />
+
+      {likesCount > 0 && (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 4,
+            left: 4,
+            backgroundColor: "rgba(0,0,0,0.6)",
+            borderRadius: 8,
+            paddingHorizontal: 6,
+            paddingVertical: 2,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Heart
+            size={12}
+            color="#ffffff"
+            fill="#e63946"
+            style={{ marginRight: 2 }}
+          />
+          <Text style={{ color: "#ffffff", fontSize: 10 }}>{likesCount}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 }

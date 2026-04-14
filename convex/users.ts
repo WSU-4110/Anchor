@@ -14,17 +14,15 @@ export const current = query({
 });
 
 export const upsertFromClerk = internalMutation({
-  args: { data: v.any() }, // Clerk's webhook data is complex, so v.any() is easiest here
+  args: { data: v.any() },
   handler: async (ctx, { data }) => {
     const clerkUserId = data.id;
-    const email = data.email_addresses[0]?.email_address;
-    const firstName = data.first_name;
-    const lastName = data.last_name;
-    const imageUrl = data.image_url;
-    const following = data.unsafe_metadata?.following;
-
-    // Extract the custom field from unsafe_metadata
-    const role = data.unsafe_metadata?.role;
+    const email = data.email_addresses?.[0]?.email_address ?? "";
+    const firstName = data.first_name ?? data.firstName ?? null;
+    const lastName = data.last_name ?? data.lastName ?? null;
+    const imageUrl = data.image_url ?? data.imageUrl ?? null;
+    const following = data.unsafe_metadata?.following ?? [];
+    const role = data.unsafe_metadata?.role ?? data.public_metadata?.role;
 
     const existingUser = await ctx.db
       .query("users")
@@ -37,10 +35,9 @@ export const upsertFromClerk = internalMutation({
       firstName,
       lastName,
       imageUrl,
-      role, // This will now be "business" or whatever was passed from the frontend
+      role,
       following,
     };
-    console.log(userProps);
 
     if (existingUser) {
       await ctx.db.patch(existingUser._id, userProps);
@@ -49,6 +46,7 @@ export const upsertFromClerk = internalMutation({
     }
   },
 });
+
 export const deleteFromClerk = internalMutation({
   args: { clerkUserId: v.string() },
   async handler(ctx, { clerkUserId }) {
@@ -56,10 +54,6 @@ export const deleteFromClerk = internalMutation({
 
     if (user !== null) {
       await ctx.db.delete(user._id);
-    } else {
-      console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
-      );
     }
   },
 });
@@ -87,13 +81,8 @@ async function userByExternalId(ctx: QueryCtx, clerkUserId: string) {
 
 export const getUsersByRole = query({
   args: {},
-  handler: async (ctx, args) => {
-    const users = await ctx.db
-      .query("users")
-      .withIndex("by_role")
-      .order("desc");
-
-    return users;
+  handler: async (ctx) => {
+    return await ctx.db.query("users").withIndex("by_role").collect();
   },
 });
 
@@ -107,16 +96,18 @@ export const followBusiness = mutation({
       .query("users")
       .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", args.userId))
       .unique();
-    if (user) {
-      const following = user.following;
-      if (following.includes(args.businessName)) {
-        return;
-      }
-      following.push(args.businessName);
-      await ctx.db.patch(user._id, {
-        following: following,
-      });
+
+    if (!user) return null;
+
+    if (user.following.includes(args.businessName)) {
+      return user._id;
     }
+
+    await ctx.db.patch(user._id, {
+      following: [...user.following, args.businessName],
+    });
+
+    return user._id;
   },
 });
 
@@ -130,21 +121,15 @@ export const unFollowBusiness = mutation({
       .query("users")
       .withIndex("byClerkUserId", (q) => q.eq("clerkUserId", args.userId))
       .unique();
-    if (user) {
-      const following = user.following;
-      if (!following.includes(args.businessName)) {
-        return;
-      }
 
-      following.map((account) => {
-        if (account === args.businessName) {
-          following.pop();
-        }
-      });
+    if (!user) return null;
 
-      await ctx.db.patch(user._id, {
-        following: following,
-      });
-    }
+    await ctx.db.patch(user._id, {
+      following: user.following.filter(
+        (businessName) => businessName !== args.businessName,
+      ),
+    });
+
+    return user._id;
   },
 });

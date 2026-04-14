@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Button, View } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
+import { Button, View, ActivityIndicator } from "react-native";
+import { useSignUp, useSignIn } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { TView } from "@/components/themedComponents/themed-view";
 import { ArrowBigLeft } from "lucide-react-native";
@@ -11,98 +11,183 @@ import { Account } from "@/constants/types";
 import "../../global.css";
 import { TTextInput } from "@/components/themedComponents/themed-textInput";
 import ErrorDisplay from "@/components/error-display";
+
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
+  const { signIn } = useSignIn();
   const router = useRouter();
-  const { type } = useLocalSearchParams<{ type: string }>();
+  const { type } = useLocalSearchParams<{ type?: string }>();
 
   const [account, setAccount] = React.useState<Account>({
     emailAddress: "",
     password: "",
   });
+
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
   const [error, setError] = React.useState<string>();
-  const [isError, setIsError] = React.useState<boolean>(false);
+  const [isError, setIsError] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isVerifying, setIsVerifying] = React.useState(false);
 
-  // Handle submission of sign-up form
+  const resolvedType = type === "business" ? "business" : "personal";
+
+  const routeAfterAuth = React.useCallback(() => {
+    if (resolvedType === "business") {
+      router.replace("/(auth-business)");
+    } else {
+      router.replace("/(home)");
+    }
+  }, [resolvedType, router]);
+
   const onSignUpPress = async () => {
-    if (!isLoaded) return;
-    if (!account.emailAddress || !account.password) {
+    if (!isLoaded || !signUp || isSubmitting) return;
+
+    if (!account.emailAddress.trim() || !account.password.trim()) {
       setError("Please fill out form");
       setIsError(true);
+      return;
     }
-    const { emailAddress, password } = account;
-    // Start sign-up process using email and password provided
+
+    setIsSubmitting(true);
+    setError(undefined);
+    setIsError(false);
+
     try {
       await signUp.create({
-        emailAddress,
-        password,
+        emailAddress: account.emailAddress.trim().toLowerCase(),
+        password: account.password,
+        username: account.emailAddress.split("@")[0],
+        publicMetadata: {
+          role: resolvedType,
+        },
         unsafeMetadata: {
-          role: type,
+          role: resolvedType,
           following: [],
         },
       });
 
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
 
       setPendingVerification(true);
-    } catch (err) {
-      setError("There was an error signing up");
+    } catch (err: any) {
+      const message =
+        err?.errors?.[0]?.longMessage ||
+        err?.errors?.[0]?.message ||
+        "Signup failed";
+
+      setError(message);
       setIsError(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
   const onVerifyPress = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded || !signUp || isVerifying) return;
+
+    const cleanCode = code.trim();
+
+    if (!cleanCode) {
+      setError("Enter code.");
+      setIsError(true);
+      return;
+    }
+
+    setIsVerifying(true);
+    setError(undefined);
+    setIsError(false);
 
     try {
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
+        code: cleanCode,
       });
 
       if (signUpAttempt.status === "complete") {
         await setActive({
-          session: signUpAttempt.createdSessionId,
-          navigate: async ({ session }) => {
-            if (session?.currentTask) {
-              // Check for tasks and navigate to custom UI to help users resolve them
-              // See https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks
-              console.log(session?.currentTask);
+          session: signUpAttempt.createdSessionId!,
+        });
+        routeAfterAuth();
+        return;
+      }
+
+      setError("Verification failed. Try again.");
+      setIsError(true);
+    } catch (err: any) {
+      const codeType = err?.errors?.[0]?.code;
+
+      if (codeType === "verification_already_verified") {
+        try {
+          if (signIn) {
+            const signInAttempt = await signIn.create({
+              identifier: account.emailAddress.trim().toLowerCase(),
+              password: account.password,
+            });
+
+            if (signInAttempt.status === "complete") {
+              await setActive({
+                session: signInAttempt.createdSessionId!,
+              });
+              routeAfterAuth();
               return;
             }
-            if (type === "business") {
-              router.replace("/(auth-business)");
-            } else {
-              router.replace("/(home)");
-            }
-          },
-        });
-      } else {
-        console.error(JSON.stringify(signUpAttempt, null, 2));
+          }
+        } catch {
+          routeAfterAuth();
+          return;
+        }
       }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+
+      const message =
+        err?.errors?.[0]?.longMessage ||
+        err?.errors?.[0]?.message ||
+        "Verification failed";
+
+      setError(message);
+      setIsError(true);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
   if (pendingVerification) {
     return (
-      <TView className="flex-1 justify-center items-center">
-        <TText type="default" className="mt-24">
+      <TView className="flex-1 justify-center items-center p-8">
+        {error && isError && (
+          <ErrorDisplay
+            errorMessage={error}
+            onClose={isError}
+            setOnClose={setIsError}
+          />
+        )}
+
+        <TText type="title" className="mb-4">
           Verify your email
         </TText>
+
+        <TText className="mb-6 text-center">
+          Enter the verification code sent to your email.
+        </TText>
+
         <TTextInput
-          type="default"
           className="w-3/4"
-          style={{
-            color: "white",
-          }}
+          style={{ color: "white" }}
           value={code}
           placeholder="Enter your verification code"
           placeholderTextColor="#666666"
-          onChangeText={(code) => setCode(code)}
+          onChangeText={setCode}
+          editable={!isVerifying}
         />
-        <Button title="Verify" onPress={onVerifyPress} />
+
+        <View style={{ marginTop: 16 }}>
+          {isVerifying ? (
+            <ActivityIndicator />
+          ) : (
+            <Button title="Verify" onPress={onVerifyPress} />
+          )}
+        </View>
       </TView>
     );
   }
@@ -116,33 +201,26 @@ export default function Page() {
           setOnClose={setIsError}
         />
       )}
+
       <TView className="flex flex-row gap-[64px] mb-8 mt-4">
-        <ArrowBigLeft
-          color="white"
-          onPress={() => {
-            router.back();
-          }}
-        />
+        <ArrowBigLeft color="white" onPress={() => router.back()} />
         <TText className="mr-32" type="title">
           Register
         </TText>
       </TView>
-      <TView />
+
       <TView className="gap-4 flex items-center h-64 w-full">
         <View className="h-80 w-80">
           <LottieView
             source={require("../../assets/animations/lottie-animation.json")}
             autoPlay
             loop
-            style={{
-              width: 300,
-              height: 300,
-              borderColor: "#FFF",
-            }}
+            style={{ width: 300, height: 300 }}
           />
         </View>
+
         <SignUpFormContainer
-          type={type}
+          type={resolvedType}
           account={account}
           setAccount={setAccount}
           onSignUpPress={onSignUpPress}

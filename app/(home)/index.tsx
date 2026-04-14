@@ -1,17 +1,22 @@
 import PostViewFull from "@/components/posts/postViewFull";
+import PublicBusinessAccount from "@/components/businessComponents/publicBusinessAccount";
 import { TScrollView } from "@/components/themedComponents/themed-scrollView";
 import { TText } from "@/components/themedComponents/themed-text";
 import { TView } from "@/components/themedComponents/themed-view";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-expo";
 import { usePaginatedQuery } from "convex/react";
+import { useGetAllBusinesses, useGetUser } from "@/convex/queries";
 import { Image } from "expo-image";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
+import { useMemo, useState } from "react";
 
 export default function HomeScreen() {
   const { user } = useUser();
+  const { data: currentUser } = useGetUser();
+  const { data: businesses } = useGetAllBusinesses();
 
-  const { results } = usePaginatedQuery(
+  const { results, status } = usePaginatedQuery(
     api.posts.getFeed,
     {},
     {
@@ -19,19 +24,16 @@ export default function HomeScreen() {
     },
   );
 
-  const fallbackPosts =
-    results && results.length > 0
-      ? results
-      : [
-          {
-            _id: "demo-post",
-            authorName: "Anchor Demo Business",
-            imageUrl:
-              "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
-            title: "Fresh Produce Drop",
-            body: "Testing the new share feature for Sprint 2.",
-          },
-        ];
+  const [open, setOpen] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState(null as any);
+
+  const businessMap = useMemo(() => {
+    const map = new Map<string, any>();
+    (businesses ?? []).forEach((business) => {
+      map.set(business.businessName, business);
+    });
+    return map;
+  }, [businesses]);
 
   return (
     <TView className="flex-1 p-12">
@@ -57,25 +59,54 @@ export default function HomeScreen() {
 
           <TScrollView className="mt-24 gap-8 pb-4 w-full">
             <View>
-              {fallbackPosts.map((item) => (
-                <View key={item._id}>
-                  <PostViewFull
-                    width={300}
-                    height={250}
-                    post={{
-                      authorName: item.authorName,
-                      imageUrl: item.imageUrl,
-                      title: item.title,
-                      body: item.body,
+              {status === "LoadingFirstPage" ? (
+                <TText>Loading posts...</TText>
+              ) : results.length > 0 ? (
+                results.map((item) => (
+                  <TouchableOpacity
+                    key={String(item._id)}
+                    activeOpacity={0.9}
+                    onPress={() => {
+                      const business = businessMap.get(item.authorName);
+                      if (business) {
+                        setSelectedBusiness(business);
+                        setOpen(true);
+                      }
                     }}
-                    changeView
-                    setChangeView={() => {}}
-                  />
-                </View>
-              ))}
+                  >
+                    <PostViewFull
+                      width={300}
+                      height={250}
+                      post={{
+                        _id: item._id,
+                        likes: item.likes ?? [],
+                        authorName: item.authorName,
+                        imageUrl: item.imageUrl,
+                        title: item.title,
+                        body: item.body,
+                      }}
+                      changeView={true}
+                      setChangeView={() => {}}
+                    />
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <TText>No posts yet.</TText>
+              )}
             </View>
           </TScrollView>
         </View>
+      )}
+
+      {currentUser && selectedBusiness && (
+        <PublicBusinessAccount
+          userId={currentUser.clerkUserId}
+          userFollowing={currentUser.following}
+          userView={true}
+          open={open}
+          setOpen={setOpen}
+          business={selectedBusiness}
+        />
       )}
     </TView>
   );

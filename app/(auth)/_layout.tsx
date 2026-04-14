@@ -10,19 +10,18 @@ export default function UnAuthenticatedLayout() {
   if (isSignedIn) {
     const memberships = user?.organizationMemberships || [];
     const isBusinessUser = memberships.length > 0;
-    const intendedRole = user?.unsafeMetadata?.role;
 
-    // 1. If they are in a business org, send to business dashboard
+    const intendedRole =
+      user?.publicMetadata?.role ?? user?.unsafeMetadata?.role;
+
     if (isBusinessUser) {
       return <Redirect href="/(business)" />;
     }
 
-    // 2. If they aren't in an org BUT signed up as a business, send to setup
     if (intendedRole === "business") {
       return <Redirect href="/(auth-business)" />;
     }
 
-    // 3. Otherwise, they are a standard personal user
     return <Redirect href="/(home)" />;
   }
 

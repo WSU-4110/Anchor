@@ -19,7 +19,7 @@ export default function SearchBar({
   data,
 }: SearchBarProps) {
   const [open, setOpen] = useState<boolean>(false);
-  const [businessName, setBusinessName] = useState<string>("");
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
   const { data: user, isLoading, isError, error } = useGetUser();
   const [onClose, setOnClose] = useState<boolean>(false);
 
@@ -89,28 +89,27 @@ export default function SearchBar({
         {data.map((item) => (
           <TouchableOpacity
             onPress={() => {
-              if (item.businessName) {
-                setBusinessName(item.businessName);
-                setOpen(!open);
-              }
+              setSelectedBusiness(item);
+              setOpen(true);
             }}
             className="w-full bg-[#74b890] gap-2 rounded-3xl p-4"
             key={item.businessId}
           >
-            <Text>{item.businessName || "Waiting for Input..."}</Text>
-            {user && open && (
-              <PublicBusinessAccount
-                userId={user.clerkUserId}
-                userFollowing={user.following}
-                userView={true}
-                open={open}
-                setOpen={setOpen}
-                business={item}
-              />
-            )}
+            <Text>{item.businessName}</Text>
           </TouchableOpacity>
         ))}
       </View>
+
+      {user && selectedBusiness && (
+        <PublicBusinessAccount
+          userId={user.clerkUserId}
+          userFollowing={user.following}
+          userView={true}
+          open={open}
+          setOpen={setOpen}
+          business={selectedBusiness}
+        />
+      )}
     </View>
   );
 }

@@ -8,12 +8,13 @@ import { Business } from "@/constants/types";
 type SearchBarProps = {
   data: Business[];
 };
+
 export default function SearchTab({ data }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  const filteredData = data.filter((e) => {
-    return e.businessName.toLowerCase().includes(searchQuery.toLowerCase());
-  });
+  const filteredData = data.filter((business) =>
+    business.businessName.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   return (
     <TView className="flex-1 p-12">
@@ -26,19 +27,7 @@ export default function SearchTab({ data }: SearchBarProps) {
       <SearchBar
         searchQuery={searchQuery}
         onChangeText={setSearchQuery}
-        data={
-          searchQuery.length > 0
-            ? filteredData
-            : [
-                {
-                  businessName: "",
-                  businessId: "",
-                  businessLocation: "",
-                  created_by: "",
-                  businessFollowers: [],
-                },
-              ]
-        }
+        data={searchQuery.length > 0 ? filteredData : data}
       />
     </TView>
   );

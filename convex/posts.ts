@@ -4,16 +4,16 @@ import { paginationOptsValidator } from "convex/server";
 
 /**
  * FR-8 Display consumer feed
- * Returns newest posts first (simple in-memory sort for Sprint 1).
- * Paginated results, where we pass a limit to the function i.e 5.
+ * Returns newest posts first.
  */
 export const getFeed = query({
   args: { paginationOpts: paginationOptsValidator },
   handler: async (ctx, args) => {
     const posts = await ctx.db
       .query("posts")
-      .order("desc") // descending order
+      .order("desc")
       .paginate(args.paginationOpts);
+
     return posts;
   },
 });
@@ -58,6 +58,7 @@ export const create = mutation({
       imageUrl,
       createdAt: now,
       updatedAt: now,
+      likes: [],
     });
 
     return id;
@@ -99,8 +100,38 @@ export const update = mutation({
 });
 
 /**
+ * FR-2 / FR-like Toggle like on a post
+ */
+export const toggleLike = mutation({
+  args: {
+    id: v.id("posts"),
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const existing = await ctx.db.get(args.id);
+    if (!existing) {
+      throw new Error("Post not found");
+    }
+
+    const likes = existing.likes ?? [];
+    const hasLiked = likes.includes(args.userId);
+
+    const nextLikes = hasLiked
+      ? likes.filter((id) => id !== args.userId)
+      : [...likes, args.userId];
+
+    await ctx.db.patch(args.id, {
+      likes: nextLikes,
+      updatedAt: Date.now(),
+    });
+
+    return nextLikes.length;
+  },
+});
+
+/**
  * FR-11 Delete post
- * Also cleans up saved references (fine for Sprint 1 scale).
+ * Also cleans up saved references.
  */
 export const remove = mutation({
   args: { id: v.id("posts") },
@@ -108,7 +139,6 @@ export const remove = mutation({
     const existing = await ctx.db.get(args.id);
     if (!existing) return false;
 
-    // Clean up savedPosts referencing this post
     const saves = await ctx.db.query("savedPosts").collect();
     for (const s of saves) {
       if (s.postId === args.id) {

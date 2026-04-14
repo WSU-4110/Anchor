@@ -17,18 +17,21 @@ export function useUpdateBusiness() {
   return useMutation({ mutationFn });
 }
 
-// business related follower mutations
 export function useGetFollowed() {
   const mutationFn = useConvexMutation(api.businesses.followBusiness);
   return useMutation({ mutationFn });
 }
 
 export function useGetUnFollowed() {
-  const mutationFn = useConvexMutation(api.businesses.unFollowBusiness);
+  const mutationFn = useConvexMutation(api.businesses.unfollowBusiness);
   return useMutation({ mutationFn });
 }
 
-// personal user related follower mutations
+export function useDeletePost() {
+  const mutationFn = useConvexMutation(api.posts.remove);
+  return useMutation({ mutationFn });
+}
+
 export function useFollowBusiness() {
   const mutationFn = useConvexMutation(api.users.followBusiness);
   return useMutation({ mutationFn });
@@ -36,5 +39,20 @@ export function useFollowBusiness() {
 
 export function useUnFollowBusiness() {
   const mutationFn = useConvexMutation(api.users.unFollowBusiness);
+  return useMutation({ mutationFn });
+}
+
+export function useToggleLikePost() {
+  const mutationFn = useConvexMutation(api.posts.toggleLike);
+  return useMutation({ mutationFn });
+}
+
+export function useSavePost() {
+  const mutationFn = useConvexMutation(api.saves.save);
+  return useMutation({ mutationFn });
+}
+
+export function useUnsavePost() {
+  const mutationFn = useConvexMutation(api.saves.unsave);
   return useMutation({ mutationFn });
 }
