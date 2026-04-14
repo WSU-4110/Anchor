@@ -3,8 +3,11 @@ import { Image } from "expo-image";
 import { Building2, Heart, Share2, Bookmark } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
 import { TText } from "../themedComponents/themed-text";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { handleShare } from "@/lib/helpers";
+
+import { useSave, useUnsave } from "@/convex/mutations";
+import { useGetUser, useIsSaved } from "@/convex/queries";
 
 export default function PostViewFull({
   post,
@@ -15,6 +18,47 @@ export default function PostViewFull({
 }: PostViewFullProps) {
   const [sharePost, setSharedPost] = useState<boolean>(false);
   const [save, setSave] = useState<boolean>(false);
+  
+  /*
+  const { data: user, isLoading: userLoading } = useGetUser();
+  const userKey = user?._id;
+
+  const isBookmarkedDB = useIsSaved(post.authorId, userKey);
+
+  const [isSavedLocal, setIsSavedLocal] = useState<boolean | undefined>(undefined);
+
+  const { mutate: savePost } = useSave();
+  const { mutate: unsavePost } = useUnsave();
+
+  useEffect(() => {
+    setIsSavedLocal(isBookmarkedDB);
+  }, [isBookmarkedDB]);
+
+  const handleToggleSave = async () => {
+    if (!userKey) return;
+
+    const currentlySaved = isSavedLocal ?? isBookmarkedDB;
+    const nextState = !currentlySaved;
+
+    // Update UI immediately
+    setIsSavedLocal(nextState);
+
+    try {
+      if (nextState) {
+        await savePost({ postId: post._id, userKey });
+      } else {
+        await unsavePost({ postId: post._id, userKey });
+      }
+    } catch (error) {
+      // Revert if the database call fails
+      setIsSavedLocal(currentlySaved);
+      console.error("Save/Unsave failed:", error);
+    }
+  };
+
+  const showAsSaved = isSavedLocal ?? isBookmarkedDB;
+  */
+
 
   return (
     <View>

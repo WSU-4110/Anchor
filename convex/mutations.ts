@@ -38,3 +38,16 @@ export function useUnFollowBusiness() {
   const mutationFn = useConvexMutation(api.users.unFollowBusiness);
   return useMutation({ mutationFn });
 }
+
+// save posts functions
+export function useSave() {
+  const mutationFn = useConvexMutation(api.saves.save);
+  return useMutation({ mutationFn});
+}
+
+export function useUnsave() {
+  const mutationFn = useConvexMutation(api.saves.unsave);
+  return useMutation({ mutationFn});
+}
+
+

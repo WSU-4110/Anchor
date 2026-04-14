@@ -36,3 +36,10 @@ export function useGetUser() {
   );
   return { data, isLoading, isError, error };
 }
+
+export function useIsSaved(postId: string, userKey?: string) {
+  const { data, isLoading, isError, error } = useQuery(
+    convexQuery(api.saves.isSaved, { postId: postId as any, userKey }),
+  );
+  return { data, isLoading, isError, error };
+}
